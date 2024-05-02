@@ -15,19 +15,19 @@
         <module>big-market-types</module>
     </modules>
 
-    <repositories>
-        <repository>
-            <id>nexus-aliyun</id>
-            <name>nexus-aliyun</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>nexus-aliyun</id>-->
+<!--            <name>nexus-aliyun</name>-->
+<!--            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 
     <properties>
         <java.version>1.8</java.version>
@@ -41,8 +41,8 @@
         <developer>
             <name>lyfx</name>
             <email>2391461132@qq.com</email>
-            <organization>fuzhengwei</organization>
-            <organizationUrl>https://github.com/fuzhengwei</organizationUrl>
+            <organization>com.lyfx</organization>
+            <organizationUrl>https://github.com/Liuyangfeixiao</organizationUrl>
         </developer>
     </developers>
 
