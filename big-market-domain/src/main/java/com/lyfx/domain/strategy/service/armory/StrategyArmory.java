@@ -53,7 +53,7 @@ public class StrategyArmory implements IStrategyArmory {
         // 8. 将Map集合存入redis中，方便之后查找
         // 这里使用strategyAwardSearchTable.size()而非rateRange
         // 是防止之后生成的随机数在table中对应为null
-        repository.storeStrategyAwardSearchRateTable(strategyId, strategyAwardSearchMap.size(), strategyAwardSearchMap);
+        repository.storeStrategyAwardSearchRateTable(strategyId, strategyAwardSearchTable.size(), strategyAwardSearchMap);
         
         return true;
     }
