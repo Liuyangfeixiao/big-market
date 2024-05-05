@@ -49,7 +49,7 @@ public class RedisClientConfig {
     
     static class RedisCodec extends BaseCodec {
         private final Encoder encoder = in -> {
-            ByteBuf out = ByteBufAllocator.DEFAULT.buffer();;
+            ByteBuf out = ByteBufAllocator.DEFAULT.buffer();
             try {
                 ByteBufOutputStream os = new ByteBufOutputStream(out);
                 JSON.writeTo(os, in, JSONWriter.Feature.WriteClassName);

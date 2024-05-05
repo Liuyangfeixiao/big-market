@@ -1,0 +1,12 @@
+package com.lyfx.domain.strategy.service.armory;
+
+/**
+ * @author Yangfeixaio Liu
+ * @time 4/5/2024 下午8:01
+ * @description
+ */
+public interface IStrategyDispatch {
+    Integer getRandomAwardId(Long strategyId);
+    
+    Integer getRandomAwardId(Long strategyId, String ruleWeightValue);
+}
