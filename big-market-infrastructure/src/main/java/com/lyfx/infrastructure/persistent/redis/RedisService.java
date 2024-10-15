@@ -16,7 +16,7 @@ public class RedisService implements IRedisService {
     @Resource
     private RedissonClient redissonClient;
     public <T> void setValue(String key, T value) {
-        redissonClient.<T>getBucket(key).set(value);
+        redissonClient.getBucket(key).set(value);
     }
     
     @Override

@@ -3,6 +3,7 @@ package com.lyfx.infrastructure.persistent.repository;
 import com.lyfx.domain.strategy.model.entity.StrategyAwardEntity;
 import com.lyfx.domain.strategy.model.entity.StrategyEntity;
 import com.lyfx.domain.strategy.model.entity.StrategyRuleEntity;
+import com.lyfx.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import com.lyfx.domain.strategy.repository.IStrategyRepository;
 import com.lyfx.infrastructure.persistent.dao.IStrategyAwardDao;
 import com.lyfx.infrastructure.persistent.dao.IStrategyDao;
@@ -90,7 +91,7 @@ public class StrategyRepository implements IStrategyRepository {
         // 2. 从数据库中获取数据
         Strategy strategy = strategyDao.queryStrategyByStrategyId(strategyId);
         strategyEntity =  StrategyEntity.builder()
-                .strategyId(strategy.getId())
+                .strategyId(strategy.getStrategyId())
                 .strategyDesc(strategy.getStrategyDesc())
                 .ruleModels(strategy.getRuleModels())
                 .build();
@@ -124,5 +125,14 @@ public class StrategyRepository implements IStrategyRepository {
         strategyRule.setAwardId(awardId);
         strategyRule.setRuleModel(ruleModel);
         return strategyRuleDao.queryStrategyRuleValues(strategyRule);
+    }
+
+    @Override
+    public StrategyAwardRuleModelVO queryStrategyAwardRuleModel(Long strategyId, Integer awardId) {
+        StrategyAward strategyAward = new StrategyAward();
+        strategyAward.setStrategyId(strategyId);
+        strategyAward.setAwardId(awardId);
+        String ruleModels = strategyAwardDao.queryStrategyAwardRuleModel(strategyAward);
+        return StrategyAwardRuleModelVO.builder().ruleModels(ruleModels).build();
     }
 }
