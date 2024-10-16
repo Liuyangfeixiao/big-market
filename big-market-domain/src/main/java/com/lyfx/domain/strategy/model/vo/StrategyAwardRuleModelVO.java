@@ -1,6 +1,6 @@
 package com.lyfx.domain.strategy.model.vo;
 
-import com.lyfx.domain.strategy.service.rule.factory.DefaultLogicFactory;
+import com.lyfx.domain.strategy.service.rule.filter.factory.DefaultLogicFactory;
 import com.lyfx.types.common.Constants;
 import lombok.*;
 

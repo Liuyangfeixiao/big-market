@@ -1,4 +1,4 @@
-package com.lyfx.domain.strategy.service.rule;
+package com.lyfx.domain.strategy.service.rule.filter;
 
 import com.lyfx.domain.strategy.model.entity.RuleActionEntity;
 import com.lyfx.domain.strategy.model.entity.RuleMatterEntity;

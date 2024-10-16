@@ -5,13 +5,12 @@ import com.lyfx.domain.strategy.model.entity.RaffleAwardEntity;
 import com.lyfx.domain.strategy.model.entity.RaffleFactorEntity;
 import com.lyfx.domain.strategy.service.IRaffleStrategy;
 import com.lyfx.domain.strategy.service.armory.IStrategyArmory;
-import com.lyfx.domain.strategy.service.rule.impl.RuleLockLogicFilter;
-import com.lyfx.domain.strategy.service.rule.impl.RuleWeightLogicFilter;
+import com.lyfx.domain.strategy.service.rule.chain.impl.RuleWeightLogicChain;
+import com.lyfx.domain.strategy.service.rule.filter.impl.RuleLockLogicFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -34,7 +33,7 @@ public class RaffleStrategyTest {
     private IRaffleStrategy raffleStrategy;
     
     @Resource
-    private RuleWeightLogicFilter ruleWeightLogicFilter;
+    private RuleWeightLogicChain ruleWeightLogicChain;
     @Resource
     private RuleLockLogicFilter ruleLockLogicFilter;
 
@@ -44,7 +43,7 @@ public class RaffleStrategyTest {
         log.info("测试结果: {}", strategyArmory.assembleLotteryStrategy(100002L));
         log.info("测试结果: {}", strategyArmory.assembleLotteryStrategy(100003L));
         // 通过反射设置 userScore
-        ReflectionTestUtils.setField(ruleWeightLogicFilter, "userScore", 4500L);
+        ReflectionTestUtils.setField(ruleWeightLogicChain, "userScore", 4500L);
         ReflectionTestUtils.setField(ruleLockLogicFilter, "userRaffleCount", 10L);
     }
     @Test
