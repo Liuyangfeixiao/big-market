@@ -9,6 +9,7 @@ import com.lyfx.domain.strategy.repository.IStrategyRepository;
 import com.lyfx.domain.strategy.service.armory.IStrategyDispatch;
 import com.lyfx.domain.strategy.service.rule.chain.ILogicChain;
 import com.lyfx.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
+import com.lyfx.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import com.lyfx.types.enums.ResponseCode;
 import com.lyfx.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +27,17 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
     // 策略调度服务 -> 只负责抽奖处理，通过新增接口的方式，隔离职责，不需要使用方关心或者调用抽奖的初始化
     protected IStrategyDispatch strategyDispatch;
     //  抽奖的责任链 -> 从抽奖的规则中，解耦出前置规则为责任链处理
-    private final DefaultChainFactory defaultChainFactory;
-    
+    protected final DefaultChainFactory defaultChainFactory;
+    // 抽奖规则树  -> 将中后置规则视为规则树进行处理
+    protected final DefaultTreeFactory defaultTreeFactory;
     
     // 通过构造函数进行注入
     public AbstractRaffleStrategy(IStrategyRepository repository, IStrategyDispatch strategyDispatch,
-                                  DefaultChainFactory defaultChainFactory) {
+                                  DefaultChainFactory defaultChainFactory, DefaultTreeFactory defaultTreeFactory) {
         this.repository = repository;
         this.strategyDispatch = strategyDispatch;
         this.defaultChainFactory = defaultChainFactory;
+        this.defaultTreeFactory = defaultTreeFactory;
     }
     
     @Override
@@ -45,33 +48,26 @@ public abstract class AbstractRaffleStrategy implements IRaffleStrategy {
         if (null == strategyId || StringUtils.isBlank(userId)) {
             throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
         }
+
+        // 2. 责任链进行前置抽奖规则的处理[初步拿到奖品ID，之后根据奖品ID进行中置和后置的抽奖处理]
+        // NOTE: 黑名单，积分权重等直接返回抽奖结果
+        DefaultChainFactory.StrategyAwardVO chainStrategyAwardVO = raffleLogicChain(userId, strategyId);
+        log.info("抽奖策略计算-责任链 userId: {} strategyId: {} awardId: {}",
+                userId, strategyId, chainStrategyAwardVO.getAwardId());
         
-        // 2. 获取前置规则的抽奖责任链
-        ILogicChain logicChain = defaultChainFactory.openLogicChain(strategyId);
+        // 3. 规则树进行中后置抽奖的过滤[根据奖品ID, 判断抽奖次数，库存是否满足条件，否则返回兜底奖励]
+        DefaultTreeFactory.StrategyAwardVO treeStrategyAwardVO = raffleLogicTree(userId, strategyId, chainStrategyAwardVO.getAwardId());
+        log.info("抽奖策略计算-规则树 userId: {} strategyId: {} awardId: {}",
+                userId, strategyId, treeStrategyAwardVO.getAwardId());
         
-        // 3. 通过前置规则的责任链获得 awardId
-        Integer awardId = logicChain.logic(userId, strategyId);
-
-        // 4. 查询奖品规则「抽奖中（拿到奖品ID时，过滤规则）、抽奖后（扣减完奖品库存后过滤，抽奖中拦截和无库存则走兜底）」
-        StrategyAwardRuleModelVO strategyAwardRuleModelVO = repository.queryStrategyAwardRuleModel(strategyId, awardId);
-
-        RuleActionEntity<RuleActionEntity.RaffleDuringEntity> ruleActionDuringEntity = this.doCheckRaffleCenterLogic(RaffleFactorEntity.builder()
-                .userId(userId)
-                .strategyId(strategyId)
-                .awardId(awardId)
-                .build(), strategyAwardRuleModelVO.raffleCenterRuleModelList());
-
-        if (RuleLogicCheckTypeVO.TAKE_OVER.getCode().equals(ruleActionDuringEntity.getCode())) {
-            log.info("【临时日志】抽奖中规则拦截，通过抽奖后规则 rule_luck_award 走兜底奖励");
-            return RaffleAwardEntity.builder()
-                    .awardDesc("抽奖中规则拦截，通过抽奖后规则 rule_luck_award 走兜底奖励")
-                    .build();
-        }
-
         return RaffleAwardEntity.builder()
-                .awardId(awardId).build();
+                .awardId(treeStrategyAwardVO.getAwardId())
+                .awardConfig(treeStrategyAwardVO.getAwardRuleValue())
+                .build();
     }
     
-    protected abstract RuleActionEntity<RuleActionEntity.RaffleBeforeEntity> doCheckRaffleBeforeLogic(RaffleFactorEntity raffleFactorEntity, String... logics);
-    protected abstract RuleActionEntity<RuleActionEntity.RaffleDuringEntity> doCheckRaffleCenterLogic(RaffleFactorEntity raffleFactorEntity, String... logics);
+    /** 抽奖计算-责任链抽象方法 */
+    public abstract DefaultChainFactory.StrategyAwardVO raffleLogicChain(String userId, Long strategyId);
+    /** 抽奖结果过滤-决策树抽象方法 */
+    public abstract DefaultTreeFactory.StrategyAwardVO raffleLogicTree(String userId, Long strategyId, Integer awardId);
 }

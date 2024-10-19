@@ -6,7 +6,6 @@ import com.lyfx.domain.strategy.model.entity.RaffleFactorEntity;
 import com.lyfx.domain.strategy.service.IRaffleStrategy;
 import com.lyfx.domain.strategy.service.armory.IStrategyArmory;
 import com.lyfx.domain.strategy.service.rule.chain.impl.RuleWeightLogicChain;
-import com.lyfx.domain.strategy.service.rule.filter.impl.RuleLockLogicFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,23 +33,21 @@ public class RaffleStrategyTest {
     
     @Resource
     private RuleWeightLogicChain ruleWeightLogicChain;
-    @Resource
-    private RuleLockLogicFilter ruleLockLogicFilter;
 
     @Before
     public void setUp() {
         log.info("测试结果: {}", strategyArmory.assembleLotteryStrategy(100001L));
-        log.info("测试结果: {}", strategyArmory.assembleLotteryStrategy(100002L));
-        log.info("测试结果: {}", strategyArmory.assembleLotteryStrategy(100003L));
+//        log.info("测试结果: {}", strategyArmory.assembleLotteryStrategy(100002L));
+//        log.info("测试结果: {}", strategyArmory.assembleLotteryStrategy(100003L));
+        log.info("测试结果: {}", strategyArmory.assembleLotteryStrategy(100006L));
         // 通过反射设置 userScore
         ReflectionTestUtils.setField(ruleWeightLogicChain, "userScore", 4500L);
-        ReflectionTestUtils.setField(ruleLockLogicFilter, "userRaffleCount", 10L);
     }
     @Test
     public void test_performRaffle() {
         RaffleFactorEntity raffleFactorEntity = RaffleFactorEntity.builder()
                 .userId("lyfx")
-                .strategyId(100001L)
+                .strategyId(100006L)
                 .build();
         RaffleAwardEntity raffleAwardEntity = raffleStrategy.performRaffle(raffleFactorEntity);
         log.info("请求参数：{}", JSON.toJSONString(raffleFactorEntity));

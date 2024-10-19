@@ -7,7 +7,6 @@ import com.lyfx.domain.strategy.model.vo.RuleTreeVO;
 import com.lyfx.domain.strategy.service.rule.tree.ILogicTreeNode;
 import com.lyfx.domain.strategy.service.rule.tree.factory.DefaultTreeFactory;
 import com.lyfx.domain.strategy.service.rule.tree.factory.engine.IDecisionTreeEngine;
-import io.jsonwebtoken.impl.crypto.MacProvider;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -33,8 +32,8 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
     }
     
     @Override
-    public DefaultTreeFactory.StrategyAwardData process(String userId, Long strategyId, Integer awardId) {
-        DefaultTreeFactory.StrategyAwardData strategyAwardData = null;
+    public DefaultTreeFactory.StrategyAwardVO process(String userId, Long strategyId, Integer awardId) {
+        DefaultTreeFactory.StrategyAwardVO strategyAwardData = null;
         
         // 获取基础信息
         String nextNode = ruleTreeVO.getTreeRootRuleNode();
@@ -50,7 +49,7 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
             DefaultTreeFactory.TreeActionEntity logicEntity = logicTreeNode.logic(userId, strategyId, awardId);
             // 判断返回的状态
             RuleLogicCheckTypeVO ruleLogicCheckType = logicEntity.getRuleLogicCheckType();
-            strategyAwardData = logicEntity.getStrategyAwardData();
+            strategyAwardData = logicEntity.getStrategyAwardVO();
             log.info("决策树引擎【{}】 treeId: {} node: {} code: {}",
                     ruleTreeVO.getTreeName(), ruleTreeVO.getTreeId(), nextNode, ruleLogicCheckType.getCode());
             

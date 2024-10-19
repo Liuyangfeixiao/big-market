@@ -2,8 +2,11 @@ package com.lyfx.domain.strategy.service.rule.chain.impl;
 
 import com.lyfx.domain.strategy.repository.IStrategyRepository;
 import com.lyfx.domain.strategy.service.rule.chain.AbstractLogicChain;
+import com.lyfx.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import com.lyfx.types.common.Constants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -16,12 +19,13 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Component("rule_blacklist")
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BlackListLogicChain extends AbstractLogicChain {
     @Resource
     private IStrategyRepository repository;  // 需要从数据库中查询
     
     @Override
-    public Integer logic(String userId, Long strategyId) {
+    public DefaultChainFactory.StrategyAwardVO logic(String userId, Long strategyId) {
         log.info("抽奖责任链-blacklist START. userId: {} strategyId: {} ruleModel: {}",
                 userId, strategyId, ruleModel());
         String ruleValue = repository.queryStrategyRuleValue(strategyId, ruleModel());
@@ -33,7 +37,10 @@ public class BlackListLogicChain extends AbstractLogicChain {
         for (String userBlackId : userBlackIds) {
             if (userId.equals(userBlackId)) {
                 log.info("抽奖责任链-blacklist TAKEOVER. userId: {} strategyId: {} ruleModel: {} awardId: {}", userId, strategyId, ruleModel(), awardId);
-                return awardId;
+                return DefaultChainFactory.StrategyAwardVO.builder()
+                        .awardId(awardId)
+                        .logicModel(ruleModel())
+                        .build();
             }
         }
         
@@ -44,6 +51,6 @@ public class BlackListLogicChain extends AbstractLogicChain {
     
     @Override
     protected String ruleModel() {
-        return "rule_blacklist";
+        return DefaultChainFactory.LogicModel.RULE_BLACKLIST.getCode();
     }
 }

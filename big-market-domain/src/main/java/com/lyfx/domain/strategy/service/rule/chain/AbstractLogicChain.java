@@ -1,10 +1,14 @@
 package com.lyfx.domain.strategy.service.rule.chain;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Yangfeixaio Liu
  * @time 2024/10/16 下午3:25
  * @description
  */
+
+@Slf4j
 public abstract class AbstractLogicChain implements ILogicChain{
     private ILogicChain next;
     

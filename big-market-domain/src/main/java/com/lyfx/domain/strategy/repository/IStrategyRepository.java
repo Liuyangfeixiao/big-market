@@ -3,6 +3,7 @@ package com.lyfx.domain.strategy.repository;
 import com.lyfx.domain.strategy.model.entity.StrategyAwardEntity;
 import com.lyfx.domain.strategy.model.entity.StrategyEntity;
 import com.lyfx.domain.strategy.model.entity.StrategyRuleEntity;
+import com.lyfx.domain.strategy.model.vo.RuleTreeVO;
 import com.lyfx.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 
 import java.util.List;
@@ -34,4 +35,6 @@ public interface IStrategyRepository {
     String queryStrategyRuleValue(Long strategyId, String ruleModel);
 
     StrategyAwardRuleModelVO queryStrategyAwardRuleModel(Long strategyId, Integer awardId);
+    
+    RuleTreeVO queryRuleTreeVOByTreeId(String treeId);
 }
