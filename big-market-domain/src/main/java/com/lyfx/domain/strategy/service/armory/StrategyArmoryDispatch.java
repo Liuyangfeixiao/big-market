@@ -4,6 +4,7 @@ import com.lyfx.domain.strategy.model.entity.StrategyAwardEntity;
 import com.lyfx.domain.strategy.model.entity.StrategyEntity;
 import com.lyfx.domain.strategy.model.entity.StrategyRuleEntity;
 import com.lyfx.domain.strategy.repository.IStrategyRepository;
+import com.lyfx.types.common.Constants;
 import com.lyfx.types.enums.ResponseCode;
 import com.lyfx.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,18 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
     public boolean assembleLotteryStrategy(Long strategyId) {
         // 1. 查询策略配置
         List<StrategyAwardEntity> strategyAwardEntities = repository.queryStrategyAwardList(strategyId);
-        // 正常装配全量数据
+        
+        // 2. 缓存奖品总库存 [用于decr扣将库存使用]
+        for (StrategyAwardEntity strategyAwardEntity : strategyAwardEntities) {
+            Integer awardId = strategyAwardEntity.getAwardId();
+            Integer awardCount = strategyAwardEntity.getAwardCount();
+            cacheStrategyAwardCount(strategyId, awardId, awardCount);
+        }
+        
+        // 3.1 正常装配全量数据
         assembleLotteryStrategy(String.valueOf(strategyId), strategyAwardEntities);
-        // 2. 权重策略配置 - 适用于 rule_weight 权重规则配置
+        // 3.2 权重策略配置 - 适用于 rule_weight 权重规则配置
+        // 权重规则配置【4000:102,103,104,105 5000:102,103,104,105,106,107 6000:102,103,104,105,106,107,108,109】
         StrategyEntity strategyEntity = repository.queryStrategyEntityByStrategyId(strategyId);
         String ruleWeight = strategyEntity.getRuleWeight(); // 其实就是 "rule_weight" 字符串
         if (ruleWeight == null) return true;
@@ -49,6 +59,19 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
         }
         return true;
     }
+    
+    private void cacheStrategyAwardCount(Long strategyId, Integer awardId, Integer awardCount) {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + strategyId + Constants.UNDERLINE + awardId;
+        repository.cacheStrategyAwardCount(cacheKey, awardCount);
+    }
+    
+    /**
+     * 计算公式；
+     * 1. 找到范围内最小的概率值，比如 0.1、0.02、0.003，需要找到的值是 0.003
+     * 2. 基于1找到的最小值，0.003 就可以计算出百分比、千分比的整数值。这里就是1000
+     * 3. 那么「概率 * 1000」分别占比100个、20个、3个，总计是123个
+     * 4. 后续的抽奖就用123作为随机数的范围值，生成的值100个都是0.1概率的奖品、20个是概率0.02的奖品、最后是3个是0.003的奖品。
+     */
     private void assembleLotteryStrategy(String key, List<StrategyAwardEntity> strategyAwardEntities) {
         // 1. 获取最小概率值
         BigDecimal minAwardRate = strategyAwardEntities.stream()
@@ -110,5 +133,11 @@ public class StrategyArmoryDispatch implements IStrategyArmory, IStrategyDispatc
         // 从redis中获取当前策略和当前积分权重对应的随机数范围
         int rateRange = repository.getRateRange(key);
         return repository.getStrategyAwardAssemble(key, new SecureRandom().nextInt(rateRange));
+    }
+    
+    @Override
+    public Boolean subtractAwardStock(Long strategyId, Integer awardId) {
+        String cacheKey = Constants.RedisKey.STRATEGY_AWARD_COUNT_KEY + strategyId + Constants.UNDERLINE + awardId;
+        return repository.subtractAwardStock(cacheKey);
     }
 }

@@ -2,6 +2,7 @@ package com.lyfx.domain.strategy.service.raffle;
 
 import com.lyfx.domain.strategy.model.vo.RuleTreeVO;
 import com.lyfx.domain.strategy.model.vo.StrategyAwardRuleModelVO;
+import com.lyfx.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 import com.lyfx.domain.strategy.repository.IStrategyRepository;
 import com.lyfx.domain.strategy.service.AbstractRaffleStrategy;
 import com.lyfx.domain.strategy.service.armory.IStrategyDispatch;
@@ -48,5 +49,15 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
         
         IDecisionTreeEngine treeEngine = defaultTreeFactory.openLogicTree(ruleTreeVO);
         return treeEngine.process(userId, strategyId, awardId);
+    }
+    
+    @Override
+    public StrategyAwardStockKeyVO takeQueueValue() throws InterruptedException {
+        return repository.takeQueueValue();
+    }
+    
+    @Override
+    public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
+        repository.updateStrategyAwardStock(strategyId, awardId);
     }
 }

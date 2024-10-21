@@ -44,9 +44,10 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
         while (nextNode != null) {
             // 获取决策节点
             ILogicTreeNode logicTreeNode = logicTreeGroup.get(ruleTreeNode.getRuleKey());
+            String ruleValue = ruleTreeNode.getRuleValue();
             
             // 决策节点的计算，过滤
-            DefaultTreeFactory.TreeActionEntity logicEntity = logicTreeNode.logic(userId, strategyId, awardId);
+            DefaultTreeFactory.TreeActionEntity logicEntity = logicTreeNode.logic(userId, strategyId, awardId, ruleValue);
             // 判断返回的状态
             RuleLogicCheckTypeVO ruleLogicCheckType = logicEntity.getRuleLogicCheckType();
             strategyAwardData = logicEntity.getStrategyAwardVO();
@@ -71,7 +72,8 @@ public class DecisionTreeEngine implements IDecisionTreeEngine {
                 return nodeLine.getRuleNodeTo();
             }
         }
-        throw new RuntimeException("决策树引擎, nextNode 计算失败，未找到可执行节点");
+//        throw new RuntimeException("决策树引擎, nextNode 计算失败，未找到可执行节点");
+        return null;
     }
     
     public boolean decisionLogic(String logicCheckCode, RuleTreeNodeLineVO nodeLine) {
