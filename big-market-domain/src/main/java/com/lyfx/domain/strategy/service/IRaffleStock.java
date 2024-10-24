@@ -17,8 +17,8 @@ public interface IRaffleStock {
     
     /**
      * 更新奖品库存消耗记录
-     * @param strategyId
-     * @param awardId
+     * @param strategyId 策略Id
+     * @param awardId 奖品Id
      */
     void updateStrategyAwardStock(Long strategyId, Integer awardId);
 }

@@ -1,10 +1,14 @@
 package com.lyfx.domain.strategy.service.raffle;
 
+import com.lyfx.domain.strategy.model.entity.StrategyAwardEntity;
 import com.lyfx.domain.strategy.model.vo.RuleTreeVO;
 import com.lyfx.domain.strategy.model.vo.StrategyAwardRuleModelVO;
 import com.lyfx.domain.strategy.model.vo.StrategyAwardStockKeyVO;
 import com.lyfx.domain.strategy.repository.IStrategyRepository;
 import com.lyfx.domain.strategy.service.AbstractRaffleStrategy;
+import com.lyfx.domain.strategy.service.IRaffleAward;
+import com.lyfx.domain.strategy.service.IRaffleStock;
+import com.lyfx.domain.strategy.service.IRaffleStrategy;
 import com.lyfx.domain.strategy.service.armory.IStrategyDispatch;
 import com.lyfx.domain.strategy.service.rule.chain.ILogicChain;
 import com.lyfx.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
@@ -13,6 +17,9 @@ import com.lyfx.domain.strategy.service.rule.tree.factory.engine.IDecisionTreeEn
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Yangfeixaio Liu
  * @time 2024/6/15 下午5:52
@@ -20,8 +27,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
-    
+public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRaffleAward, IRaffleStock {
     
     public DefaultRaffleStrategy(IStrategyRepository repository, IStrategyDispatch strategyDispatch,
                                  DefaultChainFactory defaultChainFactory, DefaultTreeFactory defaultTreeFactory) {
@@ -59,5 +65,10 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy {
     @Override
     public void updateStrategyAwardStock(Long strategyId, Integer awardId) {
         repository.updateStrategyAwardStock(strategyId, awardId);
+    }
+    
+    @Override
+    public List<StrategyAwardEntity> queryRaffleStrategyAwardList(Long strategyId) {
+        return repository.queryStrategyAwardList(strategyId);
     }
 }
