@@ -33,11 +33,15 @@ public class RaffleActivityOrderDaoTest {
     public void test_insert() {
         RaffleActivityOrder raffleActivityOrder = new RaffleActivityOrder();
         raffleActivityOrder.setUserId("lyfx");
+        raffleActivityOrder.setSku(9011L);
         raffleActivityOrder.setActivityId(100301L);
         raffleActivityOrder.setActivityName("测试活动");
         raffleActivityOrder.setStrategyId(100006L);
         raffleActivityOrder.setOrderId(RandomStringUtils.randomAlphanumeric(12));
         raffleActivityOrder.setOrderTime(new Date());
+        raffleActivityOrder.setTotalCount(0);
+        raffleActivityOrder.setDayCount(0);
+        raffleActivityOrder.setMonthCount(0);
         raffleActivityOrder.setState("not_used");
         // 插入数据
         raffleActivityOrderDao.insert(raffleActivityOrder);
@@ -48,11 +52,15 @@ public class RaffleActivityOrderDaoTest {
         for (int i = 0; i < 50; ++i) {
             RaffleActivityOrder raffleActivityOrder = new RaffleActivityOrder();
             raffleActivityOrder.setUserId(easyRandom.nextObject(String.class));
+            raffleActivityOrder.setSku(9011L);
             raffleActivityOrder.setActivityId(100301L);
             raffleActivityOrder.setActivityName("测试活动");
             raffleActivityOrder.setStrategyId(100006L);
             raffleActivityOrder.setOrderId(RandomStringUtils.randomAlphanumeric(12));
             raffleActivityOrder.setOrderTime(new Date());
+            raffleActivityOrder.setTotalCount(0);
+            raffleActivityOrder.setDayCount(0);
+            raffleActivityOrder.setMonthCount(0);
             raffleActivityOrder.setState("not_used");
             raffleActivityOrderDao.insert(raffleActivityOrder);
         }

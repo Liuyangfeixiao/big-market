@@ -1,4 +1,4 @@
-package com.lyfx.test.domain;
+package com.lyfx.test.domain.strategy;
 
 import com.lyfx.domain.strategy.service.armory.IStrategyArmory;
 import com.lyfx.domain.strategy.service.rule.chain.ILogicChain;

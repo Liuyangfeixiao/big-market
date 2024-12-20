@@ -1,4 +1,4 @@
-package com.lyfx.test.domain;
+package com.lyfx.test.domain.strategy;
 
 import com.alibaba.fastjson2.JSON;
 import com.lyfx.domain.strategy.model.vo.*;

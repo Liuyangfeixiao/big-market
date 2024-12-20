@@ -1,30 +1,28 @@
-package com.lyfx.infrastructure.persistent.po;
+package com.lyfx.domain.activity.model.entity;
 
+import com.lyfx.domain.activity.model.vo.OrderStateVO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
  * @author Yangfeixaio Liu
- * @time 2024/12/18 上午11:32
- * @description 抽奖活动单 持久化对象
+ * @time 2024/12/20 下午5:29
+ * @description 活动订单实体对象
  */
+
 @Data
-public class RaffleActivityOrder {
-    /**
-     * 自增ID
-     */
-    private Long id;
-    
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ActivityOrderEntity {
     /**
      * 用户ID
      */
     private String userId;
-    
-    /**
-     * 商品Sku
-     */
-    private Long sku;
     
     /**
      * 活动ID
@@ -52,11 +50,6 @@ public class RaffleActivityOrder {
     private Date orderTime;
     
     /**
-     * 订单状态（completed）
-     */
-    private String state;
-    
-    /**
      * 总次数
      */
     private Integer totalCount;
@@ -72,12 +65,8 @@ public class RaffleActivityOrder {
     private Integer monthCount;
     
     /**
-     * 创建时间
+     * 订单状态
      */
-    private Date createTime;
+    private OrderStateVO state;
     
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
 }

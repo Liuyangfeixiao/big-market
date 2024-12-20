@@ -22,7 +22,7 @@ dataSources:
     # 连接池最大连接数
     maxPoolSize: 15
     # 连接池最小连接数
-    minPoolSize: 5
+    minPoolSize: 3
 
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -34,7 +34,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 15
-    minPoolSize: 5
+    minPoolSize: 3
 
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -46,7 +46,7 @@ dataSources:
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 15
-    minPoolSize: 5
+    minPoolSize: 3
 
 rules:
   - !SINGLE
@@ -69,12 +69,7 @@ rules:
           standard:
             shardingColumn: user_id
             shardingAlgorithmName: hash_table_order_inline
-      raffle_activity_account_flow:
-        actualDataNodes: ds_$->{0..1}.raffle_activity_account_flow_00$->{0..3}
-        tableStrategy:
-          standard:
-            shardingColumn: user_id
-            shardingAlgorithmName: hash_table_flow_inline
+
     # 路由算法
     shardingAlgorithms:
       database_inline:
@@ -85,10 +80,7 @@ rules:
         type: INLINE
         props:
           algorithm-expression: raffle_activity_order_00$->{(user_id.hashCode() ^ (user_id.hashCode()) >>> 16) & (4 - 1)}
-      hash_table_flow_inline:
-        type: INLINE
-        props:
-          algorithm-expression: raffle_activity_account_flow_00$->{(user_id.hashCode() ^ (user_id.hashCode()) >>> 16) & (4 - 1)}
+
 
 props:
   # 是否在日志中打印 SQL。

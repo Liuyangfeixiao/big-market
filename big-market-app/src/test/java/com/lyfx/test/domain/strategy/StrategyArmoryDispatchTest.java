@@ -1,8 +1,7 @@
-package com.lyfx.test.domain;
+package com.lyfx.test.domain.strategy;
 
 import com.lyfx.domain.strategy.service.armory.IStrategyArmory;
 import com.lyfx.domain.strategy.service.armory.IStrategyDispatch;
-import com.lyfx.domain.strategy.service.armory.StrategyArmoryDispatch;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;

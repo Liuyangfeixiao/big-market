@@ -1,4 +1,4 @@
-package com.lyfx.test.domain;
+package com.lyfx.test.domain.strategy;
 
 import com.alibaba.fastjson2.JSON;
 import com.lyfx.domain.strategy.model.entity.RaffleAwardEntity;
@@ -7,7 +7,6 @@ import com.lyfx.domain.strategy.service.IRaffleStrategy;
 import com.lyfx.domain.strategy.service.armory.IStrategyArmory;
 import com.lyfx.domain.strategy.service.rule.chain.impl.RuleWeightLogicChain;
 import com.lyfx.domain.strategy.service.rule.tree.impl.RuleLockLogicTreeNode;
-import com.lyfx.domain.strategy.service.rule.tree.impl.RuleStockLogicTreeNode;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.annotation.Resource;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Yangfeixaio Liu
