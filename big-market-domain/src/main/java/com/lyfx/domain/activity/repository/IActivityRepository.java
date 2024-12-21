@@ -1,5 +1,6 @@
 package com.lyfx.domain.activity.repository;
 
+import com.lyfx.domain.activity.model.aggregate.CreateOrderAggregate;
 import com.lyfx.domain.activity.model.entity.ActivityCountEntity;
 import com.lyfx.domain.activity.model.entity.ActivityEntity;
 import com.lyfx.domain.activity.model.entity.ActivitySkuEntity;
@@ -15,4 +16,6 @@ public interface IActivityRepository {
     ActivityEntity queryRaffleActivityByActivityId(Long activityId);
     
     ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId);
+    
+    void doSaveOrder(CreateOrderAggregate createOrderAggregate);
 }

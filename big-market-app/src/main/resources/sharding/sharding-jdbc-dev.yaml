@@ -63,6 +63,8 @@ rules:
       none:
     # 表的路由
     tables:
+      raffle_activity_account:
+        actualDataNodes: ds_$->{0..1}.raffle_activity_account
       raffle_activity_order:
         actualDataNodes: ds_$->{0..1}.raffle_activity_order_00$->{0..3}
         tableStrategy:

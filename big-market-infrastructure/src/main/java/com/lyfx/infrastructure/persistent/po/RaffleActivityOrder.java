@@ -52,11 +52,6 @@ public class RaffleActivityOrder {
     private Date orderTime;
     
     /**
-     * 订单状态（completed）
-     */
-    private String state;
-    
-    /**
      * 总次数
      */
     private Integer totalCount;
@@ -70,6 +65,16 @@ public class RaffleActivityOrder {
      * 月次数
      */
     private Integer monthCount;
+    
+    /**
+     * 订单状态（completed）
+     */
+    private String state;
+    
+    /**
+     * 业务仿重ID - 外部透传的，确保幂等
+     */
+    private String outBusinessNo;
     
     /**
      * 创建时间
