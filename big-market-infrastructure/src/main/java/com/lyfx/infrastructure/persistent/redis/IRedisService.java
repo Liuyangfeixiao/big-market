@@ -2,6 +2,9 @@ package com.lyfx.infrastructure.persistent.redis;
 
 import org.redisson.api.*;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Yangfeixaio Liu
  * @time 3/5/2024 下午10:06
@@ -80,15 +83,15 @@ public interface IRedisService {
      * 自减 Key 的值；1、2、3、4
      *
      * @param key 键
-     * @return 自增后的值
+     * @return 自减后的值
      */
     long decr(String key);
     
     /**
-     * 指定值，自增 Key 的值；1、2、3、4
+     * 指定值，自减 Key 的值；1、2、3、4
      *
      * @param key 键
-     * @return 自增后的值
+     * @return 自减后的值
      */
     long decrBy(String key, long delta);
     
@@ -250,4 +253,6 @@ public interface IRedisService {
     void setAtomicLong(String key, long value);
     
     Boolean setNx(String lockKey);
+    
+    Boolean setNx(String lockKey, Duration duration);
 }

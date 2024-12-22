@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 
 @Slf4j
-public abstract class AbstractRaffleActivity extends RaffleQActivitySupport implements IRaffleOrder {
+public abstract class AbstractRaffleActivity extends RaffleActivitySupport implements IRaffleOrder {
     
     public AbstractRaffleActivity(DefaultActivityChainFactory defaultActivityChainFactory, IActivityRepository activityRepository) {
         super(defaultActivityChainFactory, activityRepository);
@@ -58,7 +58,7 @@ public abstract class AbstractRaffleActivity extends RaffleQActivitySupport impl
         // 3. 活动动作规则校验
         // TODO 后续处理规则过滤流程，暂时不处理责任链结果
         IActionChain actionChain = defaultActivityChainFactory.openActionChain();
-        boolean success = actionChain.action(activityEntity, activitySkuEntity, activityCountEntity);
+        actionChain.action(activityEntity, activitySkuEntity, activityCountEntity);
         
         // 4. 构建订单聚合对象
         CreateOrderAggregate createOrderAggregate = buildOrderAggregate(skuRechargeEntity, activitySkuEntity, activityEntity, activityCountEntity);

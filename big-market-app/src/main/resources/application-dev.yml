@@ -31,6 +31,18 @@ spring:
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
     url: jdbc:shardingsphere:classpath:sharding/sharding-jdbc-dev.yaml
 
+  # spring 配置 rabbitMQ
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 5672
+    username: admin
+    password: admin
+    listener:
+      simple:
+        prefetch: 1  # 每次投递N个消息，消费完再投递N个
+    topic:
+      activity_sku_stock_zero: activity_sku_stock_zero
+
 # 数据库配置；启动时配置数据库资源信息-单库单表
 #spring:
 #  datasource:

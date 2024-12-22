@@ -11,11 +11,11 @@ import com.lyfx.domain.activity.service.rule.factory.DefaultActivityChainFactory
  * @time 2024/12/21 下午4:44
  * @description 抽奖活动支撑类
  */
-public class RaffleQActivitySupport {
+public class RaffleActivitySupport {
     protected IActivityRepository activityRepository;
     protected DefaultActivityChainFactory defaultActivityChainFactory;
     
-    public RaffleQActivitySupport(DefaultActivityChainFactory defaultActivityChainFactory, IActivityRepository activityRepository) {
+    public RaffleActivitySupport(DefaultActivityChainFactory defaultActivityChainFactory, IActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
         this.defaultActivityChainFactory = defaultActivityChainFactory;
     }
