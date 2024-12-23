@@ -226,10 +226,9 @@ public class ActivityRepository implements IActivityRepository {
     public void clearQueueValue(Long sku) {
         String cacheKey = Constants.RedisKey.ACTIVITY_SKU_COUNT_QUEUE_KEY + sku;
         RBlockingQueue<ActivitySkuStockKeyVO> blockingQueue = redisService.getBlockingQueue(cacheKey);
-        
-        RDelayedQueue<ActivitySkuStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
         blockingQueue.clear();
-//        delayedQueue.clear();
+        RDelayedQueue<ActivitySkuStockKeyVO> delayedQueue = redisService.getDelayedQueue(blockingQueue);
+        delayedQueue.clear();
     }
     
     @Override
