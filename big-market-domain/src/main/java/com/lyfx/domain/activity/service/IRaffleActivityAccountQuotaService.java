@@ -9,13 +9,7 @@ import com.lyfx.domain.activity.model.entity.SkuRechargeEntity;
  * @time 2024/12/20 下午5:15
  * @description 抽奖活动订单接口
  */
-public interface IRaffleOrder {
-    /**
-     * 以sku创建抽奖活动订单，获得参与抽奖资格（可消耗的次数）
-     * @param activityShopCarEntity
-     * @return 订单记录实体
-     */
-    ActivityOrderEntity createRaffleActivityOrder(ActivityShopCarEntity activityShopCarEntity);
+public interface IRaffleActivityAccountQuotaService {
     
     /**
      * 创建 sku 账户充值订单，给用户增加抽奖次数
@@ -26,6 +20,6 @@ public interface IRaffleOrder {
      * @param skuRechargeEntity 活动商品充值实体对象
      * @return 订单号
      */
-    String createSkuRechargeOrder(SkuRechargeEntity skuRechargeEntity);
+    String createOrder(SkuRechargeEntity skuRechargeEntity);
     
 }

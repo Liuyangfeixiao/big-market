@@ -1,5 +1,6 @@
 package com.lyfx.infrastructure.persistent.dao;
 
+import com.lyfx.domain.activity.model.entity.ActivityAccountEntity;
 import com.lyfx.infrastructure.persistent.po.RaffleActivityAccount;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -16,4 +17,15 @@ public interface IRaffleActivityAccountDao {
     
     int updateAccountQuota(RaffleActivityAccount raffleActivityAccount);
     
+    int updateActivityAccountSubtractionQuota(RaffleActivityAccount build);
+    
+    int updateActivityAccountMonthSubtractionQuota(RaffleActivityAccount build);
+    
+    void updateActivityAccountMonthSurplusImageQuota(RaffleActivityAccount build);
+    
+    int updateActivityAccountDaySubtractionQuota(RaffleActivityAccount build);
+    
+    void updateActivityAccountDaySurplusImageQuota(RaffleActivityAccount build);
+    
+    RaffleActivityAccount queryActivityAccountByUserId(RaffleActivityAccount build);
 }

@@ -1,5 +1,6 @@
-package com.lyfx.infrastructure.persistent.po;
+package com.lyfx.domain.activity.model.entity;
 
+import com.lyfx.domain.activity.model.vo.UserRaffleOrderStateVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,17 +10,15 @@ import java.util.Date;
 
 /**
  * @author Yangfeixaio Liu
- * @time 2024/12/24 下午5:27
- * @description 用户获得抽奖订单表
+ * @time 2024/12/25 下午1:43
+ * @description 用户抽奖单实体对象啊
  */
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRaffleOrder {
-    
-    private String id;
+public class UserRaffleOrderEntity {
     /** 用户ID */
     private String userId;
     /** 活动ID */
@@ -33,10 +32,7 @@ public class UserRaffleOrder {
     /** 下单时间 */
     private Date orderTime;
     /** 订单状态；create-创建、used-已使用、cancel-已作废 */
-    private String orderState;
-    /** 创建时间 */
-    private Date createTime;
-    /** 更新时间 */
-    private Date updateTime;
-    
+    private UserRaffleOrderStateVO orderState;
+    /** 结束时间 */
+    private Date endDateTime;
 }

@@ -1,5 +1,6 @@
 package com.lyfx.infrastructure.persistent.dao;
 
+import com.lyfx.infrastructure.persistent.po.UserRaffleOrder;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -10,4 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface IUserRaffleOrderDao {
+    void insert(UserRaffleOrder build);
+    
+    UserRaffleOrder queryNoUsedRaffleOrder(UserRaffleOrder build);
 }

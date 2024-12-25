@@ -1,7 +1,6 @@
 package com.lyfx.domain.activity.service;
 
 import com.lyfx.domain.activity.model.vo.ActivitySkuStockKeyVO;
-import org.apache.catalina.LifecycleState;
 
 import java.util.List;
 
@@ -10,7 +9,7 @@ import java.util.List;
  * @time 2024/12/22 下午7:37
  * @description 活动sku库存处理接口
  */
-public interface ISkuStock {
+public interface IRaffleActivitySkuStockService {
     
     /**
      * 获取活动sku库存消耗队列

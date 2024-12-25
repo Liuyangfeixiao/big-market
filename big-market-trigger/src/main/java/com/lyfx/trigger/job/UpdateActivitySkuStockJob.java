@@ -1,7 +1,7 @@
 package com.lyfx.trigger.job;
 
 import com.lyfx.domain.activity.model.vo.ActivitySkuStockKeyVO;
-import com.lyfx.domain.activity.service.ISkuStock;
+import com.lyfx.domain.activity.service.IRaffleActivitySkuStockService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,13 +19,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Component
 public class UpdateActivitySkuStockJob {
     @Resource
-    private ISkuStock skuStock;
+    private IRaffleActivitySkuStockService skuStock;
     @Resource
     private ThreadPoolExecutor executor;
     
     @Scheduled(cron = "0/5 * * * * ?")
     public void exec() {
         try {
+            log.info("定时任务，更新SKU消耗库存 [延迟队列获取，降低对数据库的更新频次，不产生竞争]");
             List<Long> skus = skuStock.querySkuList();
             for (Long sku : skus) {
                 executor.execute(() -> {

@@ -1,9 +1,8 @@
 package com.lyfx.domain.activity.repository;
 
-import com.lyfx.domain.activity.model.aggregate.CreateOrderAggregate;
-import com.lyfx.domain.activity.model.entity.ActivityCountEntity;
-import com.lyfx.domain.activity.model.entity.ActivityEntity;
-import com.lyfx.domain.activity.model.entity.ActivitySkuEntity;
+import com.lyfx.domain.activity.model.aggregate.CreatePartakeOrderAggregate;
+import com.lyfx.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
+import com.lyfx.domain.activity.model.entity.*;
 import com.lyfx.domain.activity.model.vo.ActivitySkuStockKeyVO;
 
 import java.util.Date;
@@ -21,7 +20,7 @@ public interface IActivityRepository {
     
     ActivityCountEntity queryRaffleActivityCountByActivityCountId(Long activityCountId);
     
-    void doSaveOrder(CreateOrderAggregate createOrderAggregate);
+    void doSaveOrder(CreateQuotaOrderAggregate createOrderAggregate);
     
     void cacheActivitySkuStockCount(String cacheKey, Integer stockCount);
     
@@ -38,4 +37,14 @@ public interface IActivityRepository {
     void clearActivitySkuStock(Long sku);
     
     List<Long> querySkuList();
+    
+    void saveCreatePartakeOrderAggregate(CreatePartakeOrderAggregate createPartakeOrderAggregate);
+    
+    ActivityAccountEntity queryActivityAccountByUserId(String userId, Long activityId);
+    
+    UserRaffleOrderEntity queryNoUsedRaffleOrder(PartakeRaffleActivityEntity partakeRaffleActivityEntity);
+    
+    ActivityAccountMonthEntity queryActivityAccountMonthByUserId(String userId, Long activityId, String month);
+    
+    ActivityAccountDayEntity queryActivityAccountDayByUserId(String userId, Long activityId, String day);
 }

@@ -1,5 +1,6 @@
 package com.lyfx.infrastructure.persistent.dao;
 
+import com.lyfx.infrastructure.persistent.po.RaffleActivityAccountMonth;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -10,4 +11,9 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface IRaffleActivityAccountMonthDao {
+    int updateActivityAccountMonthSubtractionQuota(RaffleActivityAccountMonth build);
+    
+    void insertActivityAccountMonth(RaffleActivityAccountMonth build);
+    
+    RaffleActivityAccountMonth queryActivityAccountMonthByUserId(RaffleActivityAccountMonth build);
 }

@@ -3,7 +3,7 @@ package com.lyfx.trigger.listener;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
-import com.lyfx.domain.activity.service.ISkuStock;
+import com.lyfx.domain.activity.service.IRaffleActivitySkuStockService;
 import com.lyfx.types.event.BaseEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -25,7 +25,7 @@ public class ActivitySkuStockZeroCustomer {
     @Value("${spring.rabbitmq.topic.activity_sku_stock_zero}")
     private String topic;
     @Resource
-    ISkuStock skuStock;
+    IRaffleActivitySkuStockService skuStock;
     
     @RabbitListener(queuesToDeclare = @Queue(value = "${spring.rabbitmq.topic.activity_sku_stock_zero}"))
     public void listener(String message) {

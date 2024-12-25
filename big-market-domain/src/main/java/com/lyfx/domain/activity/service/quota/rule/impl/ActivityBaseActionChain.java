@@ -1,10 +1,10 @@
-package com.lyfx.domain.activity.service.rule.impl;
+package com.lyfx.domain.activity.service.quota.rule.impl;
 
 import com.lyfx.domain.activity.model.entity.ActivityCountEntity;
 import com.lyfx.domain.activity.model.entity.ActivityEntity;
 import com.lyfx.domain.activity.model.entity.ActivitySkuEntity;
 import com.lyfx.domain.activity.model.vo.ActivityStateVO;
-import com.lyfx.domain.activity.service.rule.AbstractActionChain;
+import com.lyfx.domain.activity.service.quota.rule.AbstractActionChain;
 import com.lyfx.types.enums.ResponseCode;
 import com.lyfx.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;

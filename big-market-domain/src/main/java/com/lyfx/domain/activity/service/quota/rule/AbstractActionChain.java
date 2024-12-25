@@ -1,4 +1,4 @@
-package com.lyfx.domain.activity.service.rule;
+package com.lyfx.domain.activity.service.quota.rule;
 
 /**
  * @author Yangfeixaio Liu
