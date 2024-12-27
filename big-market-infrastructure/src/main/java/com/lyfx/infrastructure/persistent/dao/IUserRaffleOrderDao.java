@@ -14,4 +14,6 @@ public interface IUserRaffleOrderDao {
     void insert(UserRaffleOrder build);
     
     UserRaffleOrder queryNoUsedRaffleOrder(UserRaffleOrder build);
+    
+    int updateUserRaffleOrderStateUsed(UserRaffleOrder userRaffleOrderReq);
 }

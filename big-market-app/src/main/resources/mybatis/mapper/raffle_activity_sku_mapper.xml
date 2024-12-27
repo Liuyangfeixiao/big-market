@@ -34,5 +34,10 @@
         from raffle_activity_sku
         where activity_id in (select activity_id from raffle_activity where state = 'open')
     </select>
+    <select id="queryActivitySkuListByActivityId" parameterType="java.lang.Long" resultMap="dataMap">
+        select sku, activity_id, activity_count_id, stock_count, stock_count_surplus
+        from raffle_activity_sku
+        where activity_id = #{activityId}
+    </select>
 
 </mapper>
