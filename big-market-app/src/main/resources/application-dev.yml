@@ -42,6 +42,7 @@ spring:
         prefetch: 1  # 每次投递N个消息，消费完再投递N个
     topic:
       activity_sku_stock_zero: activity_sku_stock_zero
+      send_award: send_award
 
 # 数据库配置；启动时配置数据库资源信息-单库单表
 #spring:
