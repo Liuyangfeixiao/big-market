@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author Yangfeixaio Liu
@@ -25,10 +26,10 @@ public class RuleStockLogicTreeNode implements ILogicTreeNode {
     private IStrategyRepository repository;
     
     @Override
-    public DefaultTreeFactory.TreeActionEntity logic(String userId, Long strategyId, Integer awardId, String ruleValue) {
+    public DefaultTreeFactory.TreeActionEntity logic(String userId, Long strategyId, Integer awardId, String ruleValue, Date endDateTime) {
         log.info("规则过滤-库存扣减 START. userId: {} strategyId: {} awardId: {}", userId, strategyId, awardId);
         // 1. 扣减库存
-        Boolean status = strategyDispatch.subtractAwardStock(strategyId, awardId);
+        Boolean status = strategyDispatch.subtractAwardStock(strategyId, awardId, endDateTime);
         // true. 库存扣减成功
         if (status) {
             // 发送消息, 写入延迟队列, 延迟消费更新数据库记录
@@ -37,20 +38,20 @@ public class RuleStockLogicTreeNode implements ILogicTreeNode {
                     .strategyId(strategyId)
                     .awardId(awardId)
                     .build());
-            log.info("规则过滤-库存扣减 ALLOW. userId: {} strategyId: {} awardId: {} ruleValue: {}",
+            log.info("规则过滤-库存扣减 TAKE_OVER. userId: {} strategyId: {} awardId: {} ruleValue: {}",
                     userId, strategyId, awardId, ruleValue);
             return DefaultTreeFactory.TreeActionEntity.builder()
-                    .ruleLogicCheckType(RuleLogicCheckTypeVO.ALLOW)
+                    .ruleLogicCheckType(RuleLogicCheckTypeVO.TAKE_OVER)
                     .strategyAwardVO(DefaultTreeFactory.StrategyAwardVO.builder()
                             .awardId(awardId)
                             .awardRuleValue(ruleValue)
                             .build())
                     .build();
         }
-        log.info("规则过滤-库存扣减 TAKEOVER. userId: {} strategyId: {} awardId: {} ruleValue: {}",
+        log.info("规则过滤-库存扣减 ALLOW. userId: {} strategyId: {} awardId: {} ruleValue: {}",
                 userId, strategyId, awardId, ruleValue);
         return DefaultTreeFactory.TreeActionEntity.builder()
-                .ruleLogicCheckType(RuleLogicCheckTypeVO.TAKE_OVER)
+                .ruleLogicCheckType(RuleLogicCheckTypeVO.ALLOW)
                 .build();
     }
 }

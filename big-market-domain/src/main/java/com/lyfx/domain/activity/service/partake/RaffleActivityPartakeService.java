@@ -104,4 +104,9 @@ public class RaffleActivityPartakeService extends AbstractRaffleActivityPartake{
         
         return createPartakeOrderAggregate;
     }
+    
+    @Override
+    public Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId) {
+        return activityRepository.queryRaffleActivityAccountDayPartakeCount(activityId, userId);
+    }
 }

@@ -17,10 +17,8 @@ import org.redisson.api.RDelayedQueue;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -67,6 +65,7 @@ public class StrategyRepository implements IStrategyRepository {
                     .awardCountSurplus(strategyAward.getAwardCountSurplus())
                     .awardRate(strategyAward.getAwardRate())
                     .sort(strategyAward.getSort())
+                    .ruleModels(strategyAward.getRuleModels())
                     .build();
             strategyAwardEntities.add(strategyAwardEntity);
         }
@@ -230,6 +229,11 @@ public class StrategyRepository implements IStrategyRepository {
     
     @Override
     public Boolean subtractAwardStock(String cacheKey) {
+        return subtractAwardStock(cacheKey, null);
+    }
+    
+    @Override
+    public Boolean subtractAwardStock(String cacheKey, Date endDateTime) {
         // 返回剩余库存值
         long surplus = redisService.decr(cacheKey);
         if (surplus < 0) {
@@ -242,7 +246,16 @@ public class StrategyRepository implements IStrategyRepository {
         // 3. 覆盖库存覆盖的是总库存，也就是假设我们有200个库存，全部使用完后新增100个库存
         // 那么awardCount设置的是300而不是100，这样才能保证分段锁
         String lockKey = cacheKey + Constants.UNDERLINE + surplus;
-        Boolean lock = redisService.setNx(lockKey);
+        Boolean lock;
+        
+        if (endDateTime != null) {
+            long expireMills = endDateTime.getTime() - System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1);
+            Duration duration = Duration.ofMillis(expireMills);
+            lock = redisService.setNx(lockKey, duration);
+        } else {
+            lock = redisService.setNx(lockKey);
+        }
+        
         if (!lock) {
             log.info("策略奖品库存奖品加锁失败 {}", lockKey);
         }
@@ -330,5 +343,21 @@ public class StrategyRepository implements IStrategyRepository {
         }
         
         return raffleActivityAccountDayRes.getDayCount() - raffleActivityAccountDayRes.getDayCountSurplus();
+    }
+    
+    @Override
+    public Map<String, Integer> queryAwardRuleLockCount(String[] treeIds) {
+        if (null == treeIds || treeIds.length == 0) {
+            return new HashMap<>();
+        }
+        List<RuleTreeNode> ruleTreeNodes = ruleTreeNodeDao.queryRuleLocks(treeIds);
+        Map<String, Integer> resultMap = new HashMap<>();
+        for (RuleTreeNode ruleTreeNode : ruleTreeNodes) {
+            String treeId = ruleTreeNode.getTreeId();
+            Integer ruleValue = Integer.valueOf(ruleTreeNode.getRuleValue());
+            resultMap.put(treeId, ruleValue);
+        }
+        
+        return resultMap;
     }
 }

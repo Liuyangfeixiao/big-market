@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * @author Yangfeixiao Liu
  * @time 2024-05-07 00:04
@@ -19,4 +21,6 @@ public class RaffleFactorEntity {
     private String userId;
     /** 策略ID */
     private Long strategyId;
+    /** 活动结束时间 */
+    private Date endDateTime;
 }
