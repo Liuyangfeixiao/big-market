@@ -7,7 +7,7 @@
 #
 # 主机: 127.0.0.1 (MySQL 5.6.39)
 # 数据库: big_market_02
-# 生成时间: 2024-04-03 07:23:24 +0000
+# 生成时间: 2024-04-27 06:32:00 +0000
 # ************************************************************
 
 
@@ -240,6 +240,7 @@ CREATE TABLE `task` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='任务表，发送MQ';
 
 
+
 # 转储表 user_award_record_000
 # ------------------------------------------------------------
 
@@ -357,7 +358,7 @@ CREATE TABLE `user_raffle_order_000` (
                                          `strategy_id` bigint(8) NOT NULL COMMENT '抽奖策略ID',
                                          `order_id` varchar(12) NOT NULL COMMENT '订单ID',
                                          `order_time` datetime NOT NULL COMMENT '下单时间',
-                                         `order_state` varchar(16) NOT NULL DEFAULT 'create' COMMENT '订单状态；create-创建、used-已使用、cancle-已作废',
+                                         `order_state` varchar(16) NOT NULL DEFAULT 'create' COMMENT '订单状态；create-创建、used-已使用、cancel-已作废',
                                          `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                          `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                          PRIMARY KEY (`id`),
@@ -380,7 +381,7 @@ CREATE TABLE `user_raffle_order_001` (
                                          `strategy_id` bigint(8) NOT NULL COMMENT '抽奖策略ID',
                                          `order_id` varchar(12) NOT NULL COMMENT '订单ID',
                                          `order_time` datetime NOT NULL COMMENT '下单时间',
-                                         `order_state` varchar(16) NOT NULL DEFAULT 'create' COMMENT '订单状态；create-创建、used-已使用、cancle-已作废',
+                                         `order_state` varchar(16) NOT NULL DEFAULT 'create' COMMENT '订单状态；create-创建、used-已使用、cancel-已作废',
                                          `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                          `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                          PRIMARY KEY (`id`),
@@ -403,7 +404,7 @@ CREATE TABLE `user_raffle_order_002` (
                                          `strategy_id` bigint(8) NOT NULL COMMENT '抽奖策略ID',
                                          `order_id` varchar(12) NOT NULL COMMENT '订单ID',
                                          `order_time` datetime NOT NULL COMMENT '下单时间',
-                                         `order_state` varchar(16) NOT NULL DEFAULT 'create' COMMENT '订单状态；create-创建、used-已使用、cancle-已作废',
+                                         `order_state` varchar(16) NOT NULL DEFAULT 'create' COMMENT '订单状态；create-创建、used-已使用、cancel-已作废',
                                          `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                          `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                          PRIMARY KEY (`id`),
@@ -426,7 +427,7 @@ CREATE TABLE `user_raffle_order_003` (
                                          `strategy_id` bigint(8) NOT NULL COMMENT '抽奖策略ID',
                                          `order_id` varchar(12) NOT NULL COMMENT '订单ID',
                                          `order_time` datetime NOT NULL COMMENT '下单时间',
-                                         `order_state` varchar(16) NOT NULL DEFAULT 'create' COMMENT '订单状态；create-创建、used-已使用、cancle-已作废',
+                                         `order_state` varchar(16) NOT NULL DEFAULT 'create' COMMENT '订单状态；create-创建、used-已使用、cancel-已作废',
                                          `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                          `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                          PRIMARY KEY (`id`),
