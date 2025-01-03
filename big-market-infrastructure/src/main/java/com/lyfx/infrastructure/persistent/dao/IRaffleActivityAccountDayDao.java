@@ -18,4 +18,6 @@ public interface IRaffleActivityAccountDayDao {
     void insertActivityAccountDay(RaffleActivityAccountDay build);
     
     Integer queryRaffleActivityAccountDayPartakeCount(RaffleActivityAccountDay raffleActivityAccountDay);
+    
+    void addAccountQuota(RaffleActivityAccountDay raffleActivityAccountDay);
 }

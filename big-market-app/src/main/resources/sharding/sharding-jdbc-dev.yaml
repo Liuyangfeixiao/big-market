@@ -89,9 +89,15 @@ rules:
           standard:
             shardingColumn: user_id
             shardingAlgorithmName: sys_tb_alg
+      user_behavior_rebate_order:
+        actualDataNodes: ds_$->{0..1}.user_behavior_rebate_order_00$->{0..3}
+        tableStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: sys_tb_alg
     bindingTables:
       - raffle_activity_account, raffle_activity_account_day, raffle_activity_account_month
-      - user_award_record, user_raffle_order, raffle_activity_order
+      - user_award_record, user_raffle_order, raffle_activity_order, user_behavior_rebate_order
     # 路由算法
     shardingAlgorithms:
       # 分库算法

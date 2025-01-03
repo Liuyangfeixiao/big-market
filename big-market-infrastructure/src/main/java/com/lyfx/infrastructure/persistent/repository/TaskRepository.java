@@ -42,7 +42,7 @@ public class TaskRepository implements ITaskRepository {
     
     @Override
     public void sendMessage(TaskEntity taskEntity) {
-        eventPublisher.publish(taskEntity.getUserId(), taskEntity.getMessage());
+        eventPublisher.publish(taskEntity.getTopic(), taskEntity.getMessage());
     }
     
     @Override

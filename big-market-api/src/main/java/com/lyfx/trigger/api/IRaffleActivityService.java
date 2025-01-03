@@ -19,4 +19,11 @@ public interface IRaffleActivityService {
     Response<Boolean> armory(Long activityId);
     
     Response<ActivityDrawResponseDTO> draw(ActivityDrawRequestDTO request);
+    
+    /**
+     * 日历签到返利接口
+     * @param userId 用户ID
+     * @return 签到状态
+     */
+    Response<Boolean> calendarSignRebate(String userId);
 }

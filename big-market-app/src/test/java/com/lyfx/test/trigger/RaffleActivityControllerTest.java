@@ -43,4 +43,10 @@ public class RaffleActivityControllerTest {
         log.info("测试请求: {}", JSON.toJSONString(requestDTO));
         log.info("测试结果: {}", JSON.toJSONString(response));
     }
+    
+    @Test
+    public void test_calendarSignRebate() {
+        Response<Boolean> response = activityService.calendarSignRebate("xiaofuge");
+        log.info("测试结果: {}", JSON.toJSONString(response));
+    }
 }
