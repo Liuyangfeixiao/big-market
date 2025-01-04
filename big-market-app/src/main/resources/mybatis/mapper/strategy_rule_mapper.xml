@@ -24,6 +24,7 @@
         from strategy_rule
         where strategy_id = #{strategyId} and rule_model = #{ruleModel}
     </select>
+
     <select id="queryStrategyRuleValues" resultType="java.lang.String" parameterType="com.lyfx.infrastructure.persistent.po.StrategyRule">
         select rule_value
         from strategy_rule

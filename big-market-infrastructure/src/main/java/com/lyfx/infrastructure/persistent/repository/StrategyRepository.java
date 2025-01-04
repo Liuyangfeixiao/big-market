@@ -5,6 +5,7 @@ import com.lyfx.domain.strategy.model.entity.StrategyEntity;
 import com.lyfx.domain.strategy.model.entity.StrategyRuleEntity;
 import com.lyfx.domain.strategy.model.vo.*;
 import com.lyfx.domain.strategy.repository.IStrategyRepository;
+import com.lyfx.domain.strategy.service.rule.chain.factory.DefaultChainFactory;
 import com.lyfx.infrastructure.persistent.dao.*;
 import com.lyfx.infrastructure.persistent.po.*;
 import com.lyfx.infrastructure.persistent.redis.IRedisService;
@@ -32,6 +33,8 @@ public class StrategyRepository implements IStrategyRepository {
     private IStrategyAwardDao strategyAwardDao;
     @Resource
     private IRaffleActivityDao raffleActivityDao;
+    @Resource
+    private IRaffleActivityAccountDao raffleActivityAccountDao;
     @Resource
     private IRaffleActivityAccountDayDao raffleActivityAccountDayDao;
     @Resource
@@ -359,5 +362,68 @@ public class StrategyRepository implements IStrategyRepository {
         }
         
         return resultMap;
+    }
+    
+    @Override
+    public Integer queryActivityAccountTotalUseCount(String userId, Long strategyId) {
+        Long activityId = raffleActivityDao.queryActivityIdByStrategyId(strategyId);
+        RaffleActivityAccount raffleActivityAccount = raffleActivityAccountDao.queryActivityAccountByUserId(RaffleActivityAccount.builder()
+                .activityId(activityId)
+                .userId(userId)
+                .build());
+        // 返回计算使用量
+        return raffleActivityAccount.getTotalCount() - raffleActivityAccount.getTotalCountSurplus();
+    }
+    
+    @Override
+    public List<RuleWeightVO> queryAwardRuleWeight(Long strategyId) {
+        // 优先从缓存获取
+        String cacheKey = Constants.RedisKey.STRATEGY_RULE_WEIGHT_KEY + strategyId;
+        List<RuleWeightVO> ruleWeightVOS = redisService.getValue(cacheKey);
+        if (null != ruleWeightVOS) {
+            return ruleWeightVOS;
+        }
+        
+        ruleWeightVOS = new ArrayList<>();
+        // 1. 查询权重规则配置
+        StrategyRule strategyRuleReq = new StrategyRule();
+        strategyRuleReq.setStrategyId(strategyId);
+        strategyRuleReq.setRuleModel(DefaultChainFactory.LogicModel.RULE_WEIGHT.getCode());
+        // 4000:102,103,104,105 5000:102,103,104,105,106,107 6000:102,103,104,105,106,107,108,109
+        String ruleValue = strategyRuleDao.queryStrategyRuleValues(strategyRuleReq);
+        
+        // 2. 借助实体对象转换规则
+        StrategyRuleEntity strategyRuleEntity = new StrategyRuleEntity();
+        strategyRuleEntity.setRuleValue(ruleValue);
+        strategyRuleEntity.setRuleModel(DefaultChainFactory.LogicModel.RULE_WEIGHT.getCode());
+        // {"4000": [102,103,104,105], "5000":[102,103,104,105,106,107], ...}
+        Map<String, List<Integer>> ruleWeightValues = strategyRuleEntity.getRuleWeightValues();
+        // 3. 遍历规则组装奖品配置 ["4000", "5000", ...]
+        Set<String> keys = ruleWeightValues.keySet();
+        for (String key : keys) {
+            List<Integer> awardIds = ruleWeightValues.get(key);
+            List<RuleWeightVO.Award> awardList = new ArrayList<>();
+            // 也可以改为一次从数据库种查询
+            for (Integer awardId : awardIds) {
+                StrategyAward strategyAwardReq = new StrategyAward();
+                strategyAwardReq.setAwardId(awardId);
+                strategyAwardReq.setStrategyId(strategyId);
+                StrategyAward strategyAward = strategyAwardDao.queryStrategyAward(strategyAwardReq);
+                awardList.add(RuleWeightVO.Award.builder()
+                        .awardId(strategyAward.getAwardId())
+                        .awardTitle(strategyAward.getAwardTitle())
+                        .build());
+            }
+            ruleWeightVOS.add(RuleWeightVO.builder()
+                    .ruleValue(ruleValue)
+                    .weight(Integer.valueOf(key))
+                    .awardList(awardList)
+                    .awardIds(awardIds)
+                    .build());
+        }
+        // 设置缓存
+        redisService.setValue(cacheKey, ruleWeightVOS);
+        
+        return ruleWeightVOS;
     }
 }

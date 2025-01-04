@@ -4,6 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.lyfx.trigger.api.IRaffleActivityService;
 import com.lyfx.trigger.api.dto.ActivityDrawRequestDTO;
 import com.lyfx.trigger.api.dto.ActivityDrawResponseDTO;
+import com.lyfx.trigger.api.dto.UserActivityAccountRequestDTO;
+import com.lyfx.trigger.api.dto.UserActivityAccountResponseDTO;
 import com.lyfx.types.model.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -46,7 +48,25 @@ public class RaffleActivityControllerTest {
     
     @Test
     public void test_calendarSignRebate() {
-        Response<Boolean> response = activityService.calendarSignRebate("xiaofuge");
+        Response<Boolean> response = activityService.calendarSignRebate("lyfx");
+        log.info("测试结果: {}", JSON.toJSONString(response));
+    }
+    
+    @Test
+    public void test_isCalendarRebate() {
+        Response<Boolean> response = activityService.isCalendarSignRebate("lyfx");
+        log.info("测试结果: {}", JSON.toJSONString(response));
+    }
+    
+    @Test
+    public void test_queryUserActivityAccount() {
+        UserActivityAccountRequestDTO request = new UserActivityAccountRequestDTO();
+        request.setUserId("lyfx");
+        request.setActivityId(100301L);
+        // 查询数据
+        Response<UserActivityAccountResponseDTO> response = activityService.queryUserActivityAccount(request);
+        
+        log.info("请求参数: {}", JSON.toJSONString(request));
         log.info("测试结果: {}", JSON.toJSONString(response));
     }
 }

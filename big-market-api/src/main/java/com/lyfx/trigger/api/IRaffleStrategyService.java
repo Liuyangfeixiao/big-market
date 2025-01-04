@@ -1,9 +1,6 @@
 package com.lyfx.trigger.api;
 
-import com.lyfx.trigger.api.dto.RaffleAwardListRequestDTO;
-import com.lyfx.trigger.api.dto.RaffleAwardListResponseDTO;
-import com.lyfx.trigger.api.dto.RaffleStrategyRequestDTO;
-import com.lyfx.trigger.api.dto.RaffleStrategyResponseDTO;
+import com.lyfx.trigger.api.dto.*;
 import com.lyfx.types.model.Response;
 
 import java.util.List;
@@ -29,6 +26,7 @@ public interface IRaffleStrategyService {
      */
     Response<List<RaffleAwardListResponseDTO>> queryRaffleAwardList(RaffleAwardListRequestDTO requestDTO);
     
+    Response<List<RaffleStrategyRuleWeightResponseDTO>> queryRaffleStrategyRuleWeight(RaffleStrategyRuleWeightRequestDTO request);
     /**
      * 随机抽奖接口
      * @param requestDTO 请求参数

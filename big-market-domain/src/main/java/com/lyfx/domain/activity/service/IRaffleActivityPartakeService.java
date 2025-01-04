@@ -19,5 +19,4 @@ public interface IRaffleActivityPartakeService {
     
     UserRaffleOrderEntity createOrder(String userId, Long activityId);
     
-    Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
 }

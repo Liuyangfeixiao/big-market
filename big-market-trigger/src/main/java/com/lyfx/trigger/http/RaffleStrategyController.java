@@ -1,19 +1,18 @@
 package com.lyfx.trigger.http;
 
 import com.alibaba.fastjson2.JSON;
+import com.lyfx.domain.activity.service.IRaffleActivityAccountQuotaService;
 import com.lyfx.domain.activity.service.IRaffleActivityPartakeService;
 import com.lyfx.domain.strategy.model.entity.RaffleAwardEntity;
 import com.lyfx.domain.strategy.model.entity.RaffleFactorEntity;
 import com.lyfx.domain.strategy.model.entity.StrategyAwardEntity;
+import com.lyfx.domain.strategy.model.vo.RuleWeightVO;
 import com.lyfx.domain.strategy.service.IRaffleAward;
 import com.lyfx.domain.strategy.service.IRaffleRule;
 import com.lyfx.domain.strategy.service.IRaffleStrategy;
 import com.lyfx.domain.strategy.service.armory.IStrategyArmory;
 import com.lyfx.trigger.api.IRaffleStrategyService;
-import com.lyfx.trigger.api.dto.RaffleAwardListRequestDTO;
-import com.lyfx.trigger.api.dto.RaffleAwardListResponseDTO;
-import com.lyfx.trigger.api.dto.RaffleStrategyRequestDTO;
-import com.lyfx.trigger.api.dto.RaffleStrategyResponseDTO;
+import com.lyfx.trigger.api.dto.*;
 import com.lyfx.types.enums.ResponseCode;
 import com.lyfx.types.exception.AppException;
 import com.lyfx.types.model.Response;
@@ -52,6 +51,8 @@ public class RaffleStrategyController implements IRaffleStrategyService {
     private IRaffleRule raffleRule;
     @Resource
     private IRaffleActivityPartakeService raffleActivityPartakeService;
+    @Resource
+    private IRaffleActivityAccountQuotaService raffleActivityAccountQuotaService;
     
     @RequestMapping(value = "strategy_armory", method = RequestMethod.GET)
     @Override
@@ -106,7 +107,7 @@ public class RaffleStrategyController implements IRaffleStrategyService {
             // 4. 查询规则配置，获取奖品的解锁限制，抽奖N次后解锁. key: treeId, value: lock 次数
             Map<String, Integer> ruleLockCountMap = raffleRule.queryAwardRuleLockCount(treeIds);
             // 5. 查询抽奖次数 - 用户已经参与抽奖的次数
-            Integer dayPartakeCount = raffleActivityPartakeService.queryRaffleActivityAccountDayPartakeCount(request.getActivityId(), request.getUserId());
+            Integer dayPartakeCount = raffleActivityAccountQuotaService.queryRaffleActivityAccountDayPartakeCount(request.getActivityId(), request.getUserId());
             // 6. 遍历填充数据
             List<RaffleAwardListResponseDTO> raffleAwardListResponseDTOS = new ArrayList<>(strategyAwardEntities.size());
             for (StrategyAwardEntity strategyAwardEntity : strategyAwardEntities) {
@@ -134,6 +135,57 @@ public class RaffleStrategyController implements IRaffleStrategyService {
         } catch (Exception e) {
             log.error("查询抽奖奖品列表配置 FAILED. userId: {} activityId: {}", request.getUserId(), request.getActivityId(), e);
             return Response.<List<RaffleAwardListResponseDTO>>builder()
+                    .code(ResponseCode.UN_ERROR.getCode())
+                    .info(ResponseCode.UN_ERROR.getInfo())
+                    .build();
+        }
+    }
+    
+    @RequestMapping(value = "query_raffle_strategy_rule_weight", method = RequestMethod.POST)
+    @Override
+    public Response<List<RaffleStrategyRuleWeightResponseDTO>> queryRaffleStrategyRuleWeight(@RequestBody RaffleStrategyRuleWeightRequestDTO request) {
+        try {
+            log.info("查询抽奖策略权重配置 START. userId: {} activityId: {}", request.getUserId(), request.getActivityId());
+            // 1. 参数校验
+            if (StringUtils.isBlank(request.getUserId()) || null == request.getActivityId()) {
+                throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
+            }
+            
+            // 2. 查询用户抽奖总次数
+            Integer userActivityAccountTotalUseCount = raffleActivityAccountQuotaService.queryRaffleActivityAccountPartakeCount(request.getUserId(), request.getActivityId());
+            
+            // 3. 查询策略配置规则
+            List<RaffleStrategyRuleWeightResponseDTO> raffleStrategyRuleWeightList = new ArrayList<>();
+            List<RuleWeightVO> ruleWeightVOS = raffleRule.queryAwardRuleWeightByActivityId(request.getActivityId());
+            for (RuleWeightVO ruleWeightVO : ruleWeightVOS) {
+                // 转换对象
+                List<RaffleStrategyRuleWeightResponseDTO.StrategyAward> strategyAwards = new ArrayList<>();
+                List<RuleWeightVO.Award> awardList = ruleWeightVO.getAwardList();
+                for (RuleWeightVO.Award award : awardList) {
+                    RaffleStrategyRuleWeightResponseDTO.StrategyAward strategyAward = new RaffleStrategyRuleWeightResponseDTO.StrategyAward();
+                    strategyAward.setAwardId(award.getAwardId());
+                    strategyAward.setAwardTitle(award.getAwardTitle());
+                    strategyAwards.add(strategyAward);
+                }
+                // 封装对象
+                RaffleStrategyRuleWeightResponseDTO responseDTO = new RaffleStrategyRuleWeightResponseDTO();
+                responseDTO.setStrategyAwards(strategyAwards);
+                responseDTO.setRuleWeightCount(ruleWeightVO.getWeight());
+                responseDTO.setUserActivityAccountTotalUseCount(userActivityAccountTotalUseCount);
+                raffleStrategyRuleWeightList.add(responseDTO);
+            }
+            
+            Response<List<RaffleStrategyRuleWeightResponseDTO>> response = Response.<List<RaffleStrategyRuleWeightResponseDTO>>builder()
+                    .code(ResponseCode.SUCCESS.getCode())
+                    .info(ResponseCode.SUCCESS.getInfo())
+                    .data(raffleStrategyRuleWeightList)
+                    .build();
+            log.info("查询抽奖策略权重配置 FINISHED. userId:{} activityId: {} response: {}",
+                    request.getUserId(), request.getActivityId(), JSON.toJSONString(response));
+            return response;
+        } catch (Exception e) {
+            log.error("查询抽奖策略权重配置 FAILED. userId: {} activityId: {}", request.getUserId(), request.getActivityId(), e);
+            return Response.<List<RaffleStrategyRuleWeightResponseDTO>>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
                     .build();

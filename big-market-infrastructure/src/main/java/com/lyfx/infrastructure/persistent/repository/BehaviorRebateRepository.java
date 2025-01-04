@@ -112,6 +112,8 @@ public class BehaviorRebateRepository implements IBehaviorRebateRepository {
             try {
                 // 发送消息【在事务外执行，消息发送失败还有补偿任务】
                 eventPublisher.publish(taskEntity.getTopic(), taskEntity.getMessage());
+                // 更新数据库记录 task 任务表
+                taskDao.updateTaskSendMessageCompleted(task);
             } catch (Exception e) {
                 log.error("写入返利记录，发送MQ消息失败 userId: {} topic: {}", userId, task.getTopic(), e);
                 taskDao.updateTaskSendMessageFail(task);

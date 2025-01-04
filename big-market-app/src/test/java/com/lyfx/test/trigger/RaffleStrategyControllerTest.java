@@ -4,6 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.lyfx.trigger.api.IRaffleStrategyService;
 import com.lyfx.trigger.api.dto.RaffleAwardListRequestDTO;
 import com.lyfx.trigger.api.dto.RaffleAwardListResponseDTO;
+import com.lyfx.trigger.api.dto.RaffleStrategyRuleWeightRequestDTO;
+import com.lyfx.trigger.api.dto.RaffleStrategyRuleWeightResponseDTO;
 import com.lyfx.trigger.http.RaffleStrategyController;
 import com.lyfx.types.model.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,17 @@ public class RaffleStrategyControllerTest {
         log.info("请求参数：{}", JSON.toJSONString(request));
         log.info("测试结果：{}", JSON.toJSONString(response));
         
+    }
+    
+    @Test
+    public void test_queryRaffleStrategyRuleWeight() {
+        RaffleStrategyRuleWeightRequestDTO request = new RaffleStrategyRuleWeightRequestDTO();
+        request.setUserId("lyfx");
+        request.setActivityId(100301L);
+        
+        Response<List<RaffleStrategyRuleWeightResponseDTO>> response = raffleStrategyService.queryRaffleStrategyRuleWeight(request);
+        log.info("请求参数: {}", JSON.toJSONString(request));
+        log.info("测试结果: {}", JSON.toJSONString(response));
     }
     
 }
