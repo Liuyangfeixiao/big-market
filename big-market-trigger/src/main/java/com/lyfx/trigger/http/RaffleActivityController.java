@@ -193,7 +193,7 @@ public class RaffleActivityController implements IRaffleActivityService {
         }
     }
     
-    @RequestMapping(value = "is_calender_sign_rebate", method = RequestMethod.POST)
+    @RequestMapping(value = "is_calendar_sign_rebate", method = RequestMethod.POST)
     @Override
     public Response<Boolean> isCalendarSignRebate(@RequestParam String userId) {
         try{

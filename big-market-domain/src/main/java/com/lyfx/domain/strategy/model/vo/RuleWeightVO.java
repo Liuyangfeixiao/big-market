@@ -10,7 +10,7 @@ import java.util.List;
  * @description
  */
 
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,7 +23,7 @@ public class RuleWeightVO {
     
     private List<Integer> awardIds;
     
-    @Getter
+    @Data
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
