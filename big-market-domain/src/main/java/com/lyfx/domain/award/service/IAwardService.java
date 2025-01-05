@@ -1,5 +1,6 @@
 package com.lyfx.domain.award.service;
 
+import com.lyfx.domain.award.model.entity.DistributeAwardEntity;
 import com.lyfx.domain.award.model.entity.UserAwardRecordEntity;
 
 /**
@@ -10,4 +11,6 @@ import com.lyfx.domain.award.model.entity.UserAwardRecordEntity;
 
 public interface IAwardService {
     void saveUserAwardRecord(UserAwardRecordEntity userAwardRecordEntity);
+    
+    void distributeAward(DistributeAwardEntity distributeAwardEntity);
 }

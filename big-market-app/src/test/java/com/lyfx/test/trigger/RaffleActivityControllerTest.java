@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Yangfeixaio Liu
@@ -47,8 +48,21 @@ public class RaffleActivityControllerTest {
     }
     
     @Test
+    public void test_draw_blacklist() throws InterruptedException {
+        ActivityDrawRequestDTO requestDTO = new ActivityDrawRequestDTO();
+        requestDTO.setActivityId(100301L);
+        requestDTO.setUserId("user003");
+        Response<ActivityDrawResponseDTO> response = activityService.draw(requestDTO);
+        
+        log.info("测试请求: {}", JSON.toJSONString(requestDTO));
+        log.info("测试结果: {}", JSON.toJSONString(response));
+        
+        new CountDownLatch(1).await();
+    }
+    
+    @Test
     public void test_calendarSignRebate() {
-        Response<Boolean> response = activityService.calendarSignRebate("lyfx");
+        Response<Boolean> response = activityService.calendarSignRebate("user003");
         log.info("测试结果: {}", JSON.toJSONString(response));
     }
     

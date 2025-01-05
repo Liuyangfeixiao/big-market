@@ -70,6 +70,8 @@ public class DefaultChainFactory {
         private Integer awardId;
         /** 上一个执行的规则模型节点 */
         private String logicModel;
+        /** 抽奖奖品规则 */
+        private String awardRuleValue;
     }
     
     @Getter

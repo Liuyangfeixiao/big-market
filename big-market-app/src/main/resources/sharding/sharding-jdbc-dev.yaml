@@ -71,6 +71,8 @@ rules:
         actualDataNodes: ds_$->{0..1}.raffle_activity_account_month
       task:
         actualDataNodes: ds_$->{0..1}.task
+      user_credit_account:
+        actualDataNodes: ds_$->{0..1}.user_credit_account
       raffle_activity_order:
         actualDataNodes: ds_$->{0..1}.raffle_activity_order_00$->{0..3}
         tableStrategy:
@@ -96,7 +98,7 @@ rules:
             shardingColumn: user_id
             shardingAlgorithmName: sys_tb_alg
     bindingTables:
-      - raffle_activity_account, raffle_activity_account_day, raffle_activity_account_month
+      - raffle_activity_account, raffle_activity_account_day, raffle_activity_account_month, task, user_credit_account
       - user_award_record, user_raffle_order, raffle_activity_order, user_behavior_rebate_order
     # 路由算法
     shardingAlgorithms:

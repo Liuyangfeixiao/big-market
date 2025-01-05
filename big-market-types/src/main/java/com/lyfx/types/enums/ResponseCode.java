@@ -21,7 +21,8 @@ public enum ResponseCode {
     ACCOUNT_QUOTA_ERROR("ERR_BIZ_006", "账户总额度不足"),
     ACCOUNT_MONTH_QUOTA_ERROR("ERR_BIZ_007", "账户月额度不足"),
     ACCOUNT_DAY_QUOTA_ERROR("ERR_BIZ_008", "账户日额度不足"),
-    ACTIVITY_ORDER_ERROR("ERR_BIZ_009", "抽奖订单已被使用，不可重复抽奖")
+    ACTIVITY_ORDER_ERROR("ERR_BIZ_009", "抽奖订单已被使用，不可重复抽奖"),
+    AWARD_CONFIG_ERROR("ERR_CONFIG_001", "award_config 配置不是一个范围值，如 1,100"),
     ;
 
     private String code;

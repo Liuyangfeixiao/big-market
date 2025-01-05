@@ -35,4 +35,6 @@ public class UserAwardRecordEntity {
     private Date awardTime;
     /** 奖品状态；create-创建、completed-发奖完成、fail-发奖失败 */
     private AwardStateVO awardState;
+    /** 奖品配置信息: 发奖的时候根据这个值进行过滤*/
+    private String awardConfig;
 }

@@ -12,4 +12,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface IUserAwardRecordDao {
     void insert(UserAwardRecord userAwardRecord);
+    
+    Integer updateAwardRecordCompletedState(UserAwardRecord userAwardRecordReq);
 }
