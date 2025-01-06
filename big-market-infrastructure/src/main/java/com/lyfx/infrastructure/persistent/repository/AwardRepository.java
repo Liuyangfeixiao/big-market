@@ -15,15 +15,18 @@ import com.lyfx.infrastructure.persistent.po.UserAwardRecord;
 import com.lyfx.infrastructure.persistent.po.UserCreditAccount;
 import com.lyfx.infrastructure.persistent.po.UserRaffleOrder;
 import com.lyfx.infrastructure.persistent.redis.RedisService;
+import com.lyfx.types.common.Constants;
 import com.lyfx.types.enums.ResponseCode;
 import com.lyfx.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Yangfeixaio Liu
@@ -48,7 +51,7 @@ public class AwardRepository implements IAwardRepository {
     private TransactionTemplate transactionTemplate;
     @Resource
     private EventPublisher eventPublisher;
-    @Autowired
+    @Resource
     private RedisService redisService;
     
     @Override
@@ -83,24 +86,24 @@ public class AwardRepository implements IAwardRepository {
         userRaffleOrderReq.setOrderId(userAwardRecordEntity.getOrderId());
         
         transactionTemplate.execute(status -> {
-           try {
-               // 写入记录
-               userAwardRecordDao.insert(userAwardRecord);
-               // 写入任务
-               taskDao.insert(task);
-               // 更新用户活动订单状态为 used
-               int count = userRaffleOrderDao.updateUserRaffleOrderStateUsed(userRaffleOrderReq);
-               if (count != 1) {
-                   status.setRollbackOnly();
-                   log.error("写入中奖记录，用户抽奖单已使用过，不可重复抽奖 userId: {} activityId: {} awardId: {}", userId, activityId, awardId);
-                   throw new AppException(ResponseCode.ACTIVITY_ORDER_ERROR.getCode(), ResponseCode.ACTIVITY_ORDER_ERROR.getInfo());
-               }
-               return 1;
-           } catch (DuplicateKeyException e) {
-               status.setRollbackOnly();
-               log.error("写入中奖记录，唯一索引冲突 userId: {} activityId: {} awardId: {}", userId, activityId, awardId, e);
-               throw new AppException(ResponseCode.INDEX_DUP.getCode(), e);
-           }
+            try {
+                // 写入记录
+                userAwardRecordDao.insert(userAwardRecord);
+                // 写入任务
+                taskDao.insert(task);
+                // 更新用户活动订单状态为 used
+                int count = userRaffleOrderDao.updateUserRaffleOrderStateUsed(userRaffleOrderReq);
+                if (count != 1) {
+                    status.setRollbackOnly();
+                    log.error("写入中奖记录，用户抽奖单已使用过，不可重复抽奖 userId: {} activityId: {} awardId: {}", userId, activityId, awardId);
+                    throw new AppException(ResponseCode.ACTIVITY_ORDER_ERROR.getCode(), ResponseCode.ACTIVITY_ORDER_ERROR.getInfo());
+                }
+                return 1;
+            } catch (DuplicateKeyException e) {
+                status.setRollbackOnly();
+                log.error("写入中奖记录，唯一索引冲突 userId: {} activityId: {} awardId: {}", userId, activityId, awardId, e);
+                throw new AppException(ResponseCode.INDEX_DUP.getCode(), e);
+            }
         });
         
         try {
@@ -139,28 +142,42 @@ public class AwardRepository implements IAwardRepository {
         userCreditAccountReq.setAvailableAmount(userCreditAwardEntity.getCreditAmount());
         userCreditAccountReq.setAccountStatus(AccountStatusVO.open.getCode());
         
-        transactionTemplate.execute(status -> {
-            try {
-                // 更新积分 or 创建积分账户
-                int updateAccountCount = userCreditAccountDao.updateAddAmount(userCreditAccountReq);
-                if (updateAccountCount == 0) {
-                    // 没有账户存在，创建账户
-                    userCreditAccountDao.insert(userCreditAccountReq);
-                }
-                
-                // 更新奖品发放状态
-                Integer updateAwardCount = userAwardRecordDao.updateAwardRecordCompletedState(userAwardRecordReq);
-                if (0 == updateAwardCount) {
-                    log.warn("更新奖品记录，重复更新拦截 userId:{} giveOutPrizesAggregate:{}", userId, JSON.toJSONString(giveOutPrizesAggregate));
+        RLock lock = redisService.getLock(Constants.RedisKey.ACTIVITY_ACCOUNT_LOCK+userId);
+        try{
+            lock.lock(3, TimeUnit.SECONDS);
+            
+            transactionTemplate.execute(status -> {
+                try {
+                    // 更新积分 or 创建积分账户
+                    UserCreditAccount userCreditAccountRes = userCreditAccountDao.queryUserCreditAccount(userCreditAccountReq);
+                    
+                    if (userCreditAccountRes == null) {
+                        // 没有账户存在，创建账户
+                        userCreditAccountDao.insert(userCreditAccountReq);
+                    } else {
+                        // 更新账户积分
+                        userCreditAccountDao.updateAddAmount(userCreditAccountReq);
+                    }
+                    
+                    // 更新奖品发放状态
+                    Integer updateAwardCount = userAwardRecordDao.updateAwardRecordCompletedState(userAwardRecordReq);
+                    if (0 == updateAwardCount) {
+                        log.warn("更新奖品记录，重复更新拦截 userId:{} giveOutPrizesAggregate:{}", userId, JSON.toJSONString(giveOutPrizesAggregate));
+                        status.setRollbackOnly();
+                    }
+                    return 1;
+                } catch (DuplicateKeyException e) {
                     status.setRollbackOnly();
+                    log.error("更新奖品记录，唯一索引冲突 userId: {}", userId, e);
+                    throw new AppException(ResponseCode.INDEX_DUP.getCode(), e);
                 }
-                return 1;
-            } catch (DuplicateKeyException e) {
-                status.setRollbackOnly();
-                log.error("更新奖品记录，唯一索引冲突 userId: {}", userId, e);
-                throw new AppException(ResponseCode.INDEX_DUP.getCode(), e);
+            });
+        } finally {
+            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                lock.unlock();
             }
-        });
+        }
+        
     }
     
     @Override

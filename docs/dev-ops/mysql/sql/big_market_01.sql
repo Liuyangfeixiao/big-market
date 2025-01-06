@@ -856,6 +856,134 @@ CREATE TABLE `user_raffle_order_003` (
                                          KEY `idx_user_id_activity_id` (`user_id`,`activity_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户抽奖订单表';
 
+# 转储表 user_credit_order_000
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_credit_order_000`;
+
+CREATE TABLE `user_credit_order_000` (
+                                         `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+                                         `user_id` varchar(128) NOT NULL COMMENT '用户ID',
+                                         `order_id` varchar(12) NOT NULL COMMENT '订单ID',
+                                         `trade_name` varchar(32) NOT NULL COMMENT '交易名称',
+                                         `trade_type` varchar(8) NOT NULL DEFAULT 'forward' COMMENT '交易类型；forward-正向、reverse-逆向',
+                                         `trade_amount` decimal(10,2) NOT NULL COMMENT '交易金额',
+                                         `out_business_no` varchar(64) NOT NULL COMMENT '业务仿重ID - 外部透传。返利、行为等唯一标识',
+                                         `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                         `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                         PRIMARY KEY (`id`),
+                                         UNIQUE KEY `uq_order_id` (`order_id`),
+                                         UNIQUE KEY `uq_out_business_no` (`out_business_no`),
+                                         KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户积分订单记录';
+
+LOCK TABLES `user_credit_order_000` WRITE;
+/*!40000 ALTER TABLE `user_credit_order_000` DISABLE KEYS */;
+
+INSERT INTO `user_credit_order_000` (`id`, `user_id`, `order_id`, `trade_name`, `trade_type`, `trade_amount`, `out_business_no`, `create_time`, `update_time`)
+VALUES
+    (1,'xfg','584627990145','行为返利','forward',10.00,'xfg_integral_20241006','2024-10-06 12:22:14','2024-10-06 12:22:14'),
+    (2,'xfg','110272427822','行为返利','forward',10.00,'xfg_integral_100101001010001','2024-10-20 16:11:53','2024-10-20 16:11:53'),
+    (3,'xfg','485156147723','行为返利','forward',10.00,'xfg_integral_178799200110','2024-10-20 16:38:45','2024-10-20 16:38:45');
+
+/*!40000 ALTER TABLE `user_credit_order_000` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# 转储表 user_credit_order_001
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_credit_order_001`;
+
+CREATE TABLE `user_credit_order_001` (
+                                         `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+                                         `user_id` varchar(128) NOT NULL COMMENT '用户ID',
+                                         `order_id` varchar(12) NOT NULL COMMENT '订单ID',
+                                         `trade_name` varchar(32) NOT NULL COMMENT '交易名称',
+                                         `trade_type` varchar(8) NOT NULL DEFAULT 'forward' COMMENT '交易类型；forward-正向、reverse-逆向',
+                                         `trade_amount` decimal(10,2) NOT NULL COMMENT '交易金额',
+                                         `out_business_no` varchar(64) NOT NULL COMMENT '业务仿重ID - 外部透传。返利、行为等唯一标识',
+                                         `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                         `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                         PRIMARY KEY (`id`),
+                                         UNIQUE KEY `uq_order_id` (`order_id`),
+                                         UNIQUE KEY `uq_out_business_no` (`out_business_no`),
+                                         KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户积分订单记录';
+
+
+
+# 转储表 user_credit_order_002
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_credit_order_002`;
+
+CREATE TABLE `user_credit_order_002` (
+                                         `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+                                         `user_id` varchar(128) NOT NULL COMMENT '用户ID',
+                                         `order_id` varchar(12) NOT NULL COMMENT '订单ID',
+                                         `trade_name` varchar(32) NOT NULL COMMENT '交易名称',
+                                         `trade_type` varchar(8) NOT NULL DEFAULT 'forward' COMMENT '交易类型；forward-正向、reverse-逆向',
+                                         `trade_amount` decimal(10,2) NOT NULL COMMENT '交易金额',
+                                         `out_business_no` varchar(64) NOT NULL COMMENT '业务仿重ID - 外部透传。返利、行为等唯一标识',
+                                         `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                         `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                         PRIMARY KEY (`id`),
+                                         UNIQUE KEY `uq_order_id` (`order_id`),
+                                         UNIQUE KEY `uq_out_business_no` (`out_business_no`),
+                                         KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户积分订单记录';
+
+LOCK TABLES `user_credit_order_002` WRITE;
+/*!40000 ALTER TABLE `user_credit_order_002` DISABLE KEYS */;
+
+INSERT INTO `user_credit_order_002` (`id`, `user_id`, `order_id`, `trade_name`, `trade_type`, `trade_amount`, `out_business_no`, `create_time`, `update_time`)
+VALUES
+    (1,'xfg-test02','481224690406','行为返利','forward',10.00,'xfg-test02_integral_418301185073','2024-10-20 16:48:12','2024-10-20 16:48:12'),
+    (2,'xfg-test02','182616870509','行为返利','forward',10.00,'xfg-test02_integral_515019067766','2024-10-20 18:15:52','2024-10-20 18:15:52');
+
+/*!40000 ALTER TABLE `user_credit_order_002` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# 转储表 user_credit_order_003
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_credit_order_003`;
+
+CREATE TABLE `user_credit_order_003` (
+                                         `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+                                         `user_id` varchar(128) NOT NULL COMMENT '用户ID',
+                                         `order_id` varchar(12) NOT NULL COMMENT '订单ID',
+                                         `trade_name` varchar(32) NOT NULL COMMENT '交易名称',
+                                         `trade_type` varchar(8) NOT NULL DEFAULT 'forward' COMMENT '交易类型；forward-正向、reverse-逆向',
+                                         `trade_amount` decimal(10,2) NOT NULL COMMENT '交易金额',
+                                         `out_business_no` varchar(64) NOT NULL COMMENT '业务仿重ID - 外部透传。返利、行为等唯一标识',
+                                         `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                         `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                         PRIMARY KEY (`id`),
+                                         UNIQUE KEY `uq_order_id` (`order_id`),
+                                         UNIQUE KEY `uq_out_business_no` (`out_business_no`),
+                                         KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户积分订单记录';
+
+LOCK TABLES `user_credit_order_003` WRITE;
+/*!40000 ALTER TABLE `user_credit_order_003` DISABLE KEYS */;
+
+INSERT INTO `user_credit_order_003` (`id`, `user_id`, `order_id`, `trade_name`, `trade_type`, `trade_amount`, `out_business_no`, `create_time`, `update_time`)
+VALUES
+    (1,'xiaofuge26','633312779415','行为返利','forward',10.00,'xiaofuge26_integral_20240622','2024-06-22 10:22:35','2024-06-22 10:22:35'),
+    (2,'oxfA9w8-23yvwTmo2ombz0E4zJv4','157409343333','行为返利','forward',10.00,'oxfA9w8-23yvwTmo2ombz0E4zJv4_integral_20241018','2024-10-18 22:40:56','2024-10-18 22:40:56'),
+    (3,'oxfA9w8-23yvwTmo2ombz0E4zJv4','355569749986','兑换抽奖','reverse',-5.00,'749423786782','2024-10-19 14:44:55','2024-10-19 14:44:55'),
+    (4,'oxfA9w8-23yvwTmo2ombz0E4zJv4','748397938640','兑换抽奖','reverse',-5.00,'289961143515','2024-10-19 14:45:10','2024-10-19 14:45:10'),
+    (5,'oxfA9w8-23yvwTmo2ombz0E4zJv4','841275706069','兑换抽奖','reverse',-5.00,'736734564403','2024-10-19 16:15:15','2024-10-19 16:15:15'),
+    (6,'oxfA9w8-23yvwTmo2ombz0E4zJv4','473846116324','兑换抽奖','reverse',-5.00,'445087851198','2024-10-19 16:15:17','2024-10-19 16:15:17'),
+    (7,'oxfA9w8-23yvwTmo2ombz0E4zJv4','132991772778','行为返利','forward',10.00,'oxfA9w8-23yvwTmo2ombz0E4zJv4_integral_20241020','2024-10-20 10:32:49','2024-10-20 10:32:49'),
+    (8,'oxfA9w8-23yvwTmo2ombz0E4zJv4','737934197183','兑换抽奖','reverse',-10.00,'021052884467','2024-10-20 10:33:04','2024-10-20 10:33:04');
+
+/*!40000 ALTER TABLE `user_credit_order_003` ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 
 

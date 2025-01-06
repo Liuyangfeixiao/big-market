@@ -18,6 +18,7 @@ import com.lyfx.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
+import org.redisson.api.RLock;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -170,33 +171,41 @@ public class ActivityRepository implements IActivityRepository {
         raffleActivityAccountDay.setDayCount(createOrderAggregate.getDayCount());
         raffleActivityAccountDay.setDayCountSurplus(createOrderAggregate.getDayCount());
         
-        // 编程式事务
-        transactionTemplate.execute(status -> {
-            try {
-                // 1. 写入订单
-                raffleActivityOrderDao.insert(raffleActivityOrder);
-                // 2. 更新账户
-                RaffleActivityAccount raffleActivityAccountRes = raffleActivityAccountDao.queryActivityAccountByUserId(raffleActivityAccount);
-                // 3. 创建账户-更新为0则账户不存在
-                if (null == raffleActivityAccountRes) {
-                    raffleActivityAccountDao.insert(raffleActivityAccount);
-                } else {
-                    raffleActivityAccountDao.updateAccountQuota(raffleActivityAccount);
-                }
-                // 4. 更新账户 - 月
-                raffleActivityAccountMonthDao.addAccountQuota(raffleActivityAccountMonth);
-                // 4. 更新账户 - 日
-                raffleActivityAccountDayDao.addAccountQuota(raffleActivityAccountDay);
-                return 1;
-            } catch (DuplicateKeyException e) {
-                status.setRollbackOnly();
-                log.error("写入订单记录，唯一索引冲突 userId: {} activityId: {} sku: {}", activityOrderEntity.getUserId(), activityOrderEntity.getActivityId(), activityOrderEntity.getSku(), e);
-                throw new AppException(ResponseCode.INDEX_DUP.getCode());
-                
-            }
-            
-        });
+        String cacheLockKey = Constants.RedisKey.ACTIVITY_ACCOUNT_LOCK + createOrderAggregate.getUserId() + Constants.UNDERLINE + createOrderAggregate.getActivityId();
         
+        RLock lock = redisService.getLock(cacheLockKey);
+        try {
+            lock.lock(3, TimeUnit.SECONDS);
+            
+            // 编程式事务
+            transactionTemplate.execute(status -> {
+                try {
+                    // 1. 写入订单
+                    raffleActivityOrderDao.insert(raffleActivityOrder);
+                    // 2. 更新账户
+                    RaffleActivityAccount raffleActivityAccountRes = raffleActivityAccountDao.queryActivityAccountByUserId(raffleActivityAccount);
+                    // 3. 创建账户-更新为0则账户不存在
+                    if (null == raffleActivityAccountRes) {
+                        raffleActivityAccountDao.insert(raffleActivityAccount);
+                    } else {
+                        raffleActivityAccountDao.updateAccountQuota(raffleActivityAccount);
+                    }
+                    // 4. 更新账户 - 月
+                    raffleActivityAccountMonthDao.addAccountQuota(raffleActivityAccountMonth);
+                    // 4. 更新账户 - 日
+                    raffleActivityAccountDayDao.addAccountQuota(raffleActivityAccountDay);
+                    return 1;
+                } catch (DuplicateKeyException e) {
+                    status.setRollbackOnly();
+                    log.error("写入订单记录，唯一索引冲突 userId: {} activityId: {} sku: {}", activityOrderEntity.getUserId(), activityOrderEntity.getActivityId(), activityOrderEntity.getSku(), e);
+                    throw new AppException(ResponseCode.INDEX_DUP.getCode());
+                }
+            });
+        } finally {
+            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
+        }
     }
     
     @Override
