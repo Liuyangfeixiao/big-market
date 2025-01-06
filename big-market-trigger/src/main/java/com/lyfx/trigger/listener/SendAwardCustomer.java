@@ -49,7 +49,7 @@ public class SendAwardCustomer {
             
         } catch (Exception e) {
             log.error("监听奖品用户发送消息，发奖失败 topic: {} message: {}", topic, message, e);
-            throw e;
+//            throw e;
         }
     }
 }

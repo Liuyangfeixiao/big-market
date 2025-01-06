@@ -36,6 +36,7 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRa
     
     @Override
     public DefaultChainFactory.StrategyAwardVO raffleLogicChain(String userId, Long strategyId) {
+        log.info("抽奖策略-责任链 START. userId={}, strategyId={}", userId, strategyId);
         ILogicChain logicChain = defaultChainFactory.openLogicChain(strategyId);
         return logicChain.logic(userId, strategyId);
     }
@@ -53,6 +54,7 @@ public class DefaultRaffleStrategy extends AbstractRaffleStrategy implements IRa
         if (null == awardRuleModelVO) {
             return DefaultTreeFactory.StrategyAwardVO.builder().awardId(awardId).build();
         }
+        log.info("抽奖策略-规则树 START. userId={} strategyId={} awardId: {}", userId, strategyId, awardId);
         RuleTreeVO ruleTreeVO = repository.queryRuleTreeVOByTreeId(awardRuleModelVO.getRuleModels());
         if (null == ruleTreeVO) {
             throw new RuntimeException("存在抽奖策略配置的规则模型 Key，未在库表 rule_tree、rule_tree_node、" +

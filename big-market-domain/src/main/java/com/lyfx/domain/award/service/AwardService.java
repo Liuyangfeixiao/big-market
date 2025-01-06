@@ -66,6 +66,7 @@ public class AwardService implements IAwardService {
                 .build();
         // 存储聚合对象-一个事务下，用户的中奖记录
         awardRepository.saveUserAwardRecord(userAwardRecordAggregate);
+        log.info("中奖记录保存 FINISHED. userId: {} orderId: {}", userAwardRecordEntity.getUserId(), userAwardRecordEntity.getOrderId());
     }
     
     @Override
@@ -81,9 +82,8 @@ public class AwardService implements IAwardService {
         IDistributeAward distributeAward = distributeAwardMap.get(awardKey);
         if (distributeAward == null) {
             log.error("分发奖品，对应的奖品分发服务不存在. awardKey: {}", awardKey);
-            // TODO
-//            throw new RuntimeException("分发奖品, 奖品 " + distributeAwardEntity.getAwardId() + " 对应的服务 awardKey: " + awardKey + " 不存在");
-            return;
+            throw new RuntimeException("分发奖品, 奖品 " + distributeAwardEntity.getAwardId() + " 对应的服务 awardKey: " + awardKey + " 不存在");
+            
         }
         
         // 发放奖品

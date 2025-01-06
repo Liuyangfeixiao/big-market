@@ -111,6 +111,7 @@ public class AwardRepository implements IAwardRepository {
             eventPublisher.publish(taskEntity.getTopic(), task.getMessage());
             // 更新数据库记录，task 任务表
             taskDao.updateTaskSendMessageCompleted(task);
+            log.info("写入中奖记录，发送MQ消息成功. userId: {} orderId: {} topic: {}", userId, userAwardRecord.getOrderId(), task.getTopic());
         } catch (Exception e) {
             // 如果消息发送失败，则将task设置为fail，走任务扫描兜底
             log.error("写入中奖记录，发送MQ消息失败 userId: {} topic: {}", userId, task.getTopic());
