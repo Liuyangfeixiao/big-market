@@ -4,6 +4,10 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.lyfx.domain.activity.model.entity.SkuRechargeEntity;
 import com.lyfx.domain.activity.service.IRaffleActivityAccountQuotaService;
+import com.lyfx.domain.credit.model.entity.TradeEntity;
+import com.lyfx.domain.credit.model.vo.TradeNameVO;
+import com.lyfx.domain.credit.model.vo.TradeTypeVO;
+import com.lyfx.domain.credit.service.ICreditAdjustService;
 import com.lyfx.domain.rebate.event.SendRebateMessageEvent;
 import com.lyfx.types.enums.ResponseCode;
 import com.lyfx.types.event.BaseEvent;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 /**
  * @author Yangfeixaio Liu
@@ -32,6 +37,9 @@ public class RebateMessageCustomer {
     @Resource
     private IRaffleActivityAccountQuotaService raffleActivityAccountQuotaService;
     
+    @Resource
+    private ICreditAdjustService creditAdjustService;
+    
     @RabbitListener(queuesToDeclare = @Queue(value = "${spring.rabbitmq.topic.send_rebate}"))
     public void  listener(String message) {
         try {
@@ -42,14 +50,23 @@ public class RebateMessageCustomer {
             SendRebateMessageEvent.RebateMessage rebateMessage = eventMessage.getData();
             
             // 2. 入账奖励
-            if (rebateMessage.getRebateType().equals("sku")) {
-                SkuRechargeEntity skuRechargeEntity = new SkuRechargeEntity();
-                skuRechargeEntity.setUserId(rebateMessage.getUserId());
-                skuRechargeEntity.setSku(Long.valueOf(rebateMessage.getRebateConfig()));
-                skuRechargeEntity.setOutBusinessNo(rebateMessage.getBizId());
-                raffleActivityAccountQuotaService.createOrder(skuRechargeEntity);
-            } else {
-                log.info("监听用户行为返利消息 - 非SKU奖励暂时不处理 topic: {} message: {}", topic, message);
+            switch (rebateMessage.getRebateType()) {
+                case "sku":
+                    SkuRechargeEntity skuRechargeEntity = new SkuRechargeEntity();
+                    skuRechargeEntity.setUserId(rebateMessage.getUserId());
+                    skuRechargeEntity.setSku(Long.valueOf(rebateMessage.getRebateConfig()));
+                    skuRechargeEntity.setOutBusinessNo(rebateMessage.getBizId());
+                    raffleActivityAccountQuotaService.createOrder(skuRechargeEntity);
+                    break;
+                case "integral":
+                    TradeEntity tradeEntity = new TradeEntity();
+                    tradeEntity.setUserId(rebateMessage.getUserId());
+                    tradeEntity.setTradeName(TradeNameVO.REBATE);
+                    tradeEntity.setTradeType(TradeTypeVO.FORWARD);
+                    tradeEntity.setAmount(new BigDecimal(rebateMessage.getRebateConfig()));
+                    tradeEntity.setOutBusinessNo(rebateMessage.getBizId());
+                    creditAdjustService.createOrder(tradeEntity);
+                    break;
             }
             
         } catch (AppException e) {

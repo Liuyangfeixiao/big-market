@@ -61,9 +61,10 @@ public class RaffleActivityControllerTest {
     }
     
     @Test
-    public void test_calendarSignRebate() {
-        Response<Boolean> response = activityService.calendarSignRebate("user003");
+    public void test_calendarSignRebate() throws InterruptedException {
+        Response<Boolean> response = activityService.calendarSignRebate("lyfx");
         log.info("测试结果: {}", JSON.toJSONString(response));
+        new CountDownLatch(1).await();
     }
     
     @Test

@@ -1,6 +1,7 @@
 package com.lyfx.infrastructure.persistent.dao;
 
 import com.lyfx.infrastructure.persistent.po.UserCreditAccount;
+import com.lyfx.infrastructure.persistent.po.UserCreditOrder;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -16,4 +17,6 @@ public interface IUserCreditAccountDao {
     int updateAddAmount(UserCreditAccount userCreditAccount);
     
     UserCreditAccount queryUserCreditAccount(UserCreditAccount userCreditAccountReq);
+    
+    int updateSubtractAmount(UserCreditAccount userCreditAccountReq);
 }

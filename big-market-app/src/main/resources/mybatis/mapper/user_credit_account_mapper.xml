@@ -26,6 +26,12 @@
         where user_id = #{userId}
     </update>
 
+    <update id="updateSubtractAmount" parameterType="com.lyfx.infrastructure.persistent.po.UserCreditAccount">
+        update user_credit_account set
+           available_amount = available_amount + #{availableAmount}
+        where user_id = #{userId} and available_amount + #{availableAmount} >= 0
+    </update>
+
     <select id="queryUserCreditAccount" parameterType="com.lyfx.infrastructure.persistent.po.UserCreditAccount" resultMap="dataMap">
         select user_id, total_amount, available_amount, account_status
         from user_credit_account
