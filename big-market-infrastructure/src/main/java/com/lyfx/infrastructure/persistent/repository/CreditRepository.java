@@ -1,12 +1,17 @@
 package com.lyfx.infrastructure.persistent.repository;
 
+import com.alibaba.fastjson2.JSON;
 import com.lyfx.domain.award.model.vo.AccountStatusVO;
 import com.lyfx.domain.credit.model.aggregate.TradeAggregate;
 import com.lyfx.domain.credit.model.entity.CreditAccountEntity;
 import com.lyfx.domain.credit.model.entity.CreditOrderEntity;
+import com.lyfx.domain.credit.model.entity.TaskEntity;
 import com.lyfx.domain.credit.repository.ICreditRepository;
+import com.lyfx.infrastructure.event.EventPublisher;
+import com.lyfx.infrastructure.persistent.dao.ITaskDao;
 import com.lyfx.infrastructure.persistent.dao.IUserCreditAccountDao;
 import com.lyfx.infrastructure.persistent.dao.IUserCreditOrderDao;
+import com.lyfx.infrastructure.persistent.po.Task;
 import com.lyfx.infrastructure.persistent.po.UserCreditAccount;
 import com.lyfx.infrastructure.persistent.po.UserCreditOrder;
 import com.lyfx.infrastructure.persistent.redis.IRedisService;
@@ -41,7 +46,11 @@ public class CreditRepository implements ICreditRepository {
     @Resource
     private IUserCreditAccountDao userCreditAccountDao;
     @Resource
+    private ITaskDao taskDao;
+    @Resource
     private TransactionTemplate transactionTemplate;
+    @Resource
+    private EventPublisher eventPublisher;
     
     @Override
     public CreditAccountEntity queryUserCreditAccount(String userId) {
@@ -61,7 +70,7 @@ public class CreditRepository implements ICreditRepository {
         String userId = tradeAggregate.getUserId();
         CreditAccountEntity creditAccountEntity = tradeAggregate.getCreditAccountEntity();
         CreditOrderEntity creditOrderEntity = tradeAggregate.getCreditOrderEntity();
-        // TODO taskEntity 的获取
+        TaskEntity taskEntity = tradeAggregate.getTaskEntity();
         
         // 积分账户转换
         UserCreditAccount userCreditAccountReq = new UserCreditAccount();
@@ -79,7 +88,12 @@ public class CreditRepository implements ICreditRepository {
         userCreditOrderReq.setTradeType(creditOrderEntity.getTradeType().getCode());
         userCreditOrderReq.setOutBusinessNo(creditOrderEntity.getOutBusinessNo());
         
-        // TODO Task 转换
+        Task task = new Task();
+        task.setUserId(taskEntity.getUserId());
+        task.setTopic(taskEntity.getTopic());
+        task.setMessageId(taskEntity.getMessageId());
+        task.setMessage(JSON.toJSONString(taskEntity.getMessage()));
+        task.setState(taskEntity.getState().getCode());
         
         RLock lock = redisService.getLock(Constants.RedisKey.USER_CREDIT_ACCOUNT_LOCK + userId +
                 Constants.UNDERLINE + creditAccountEntity.getUserId() +
@@ -117,8 +131,7 @@ public class CreditRepository implements ICreditRepository {
                     }
                     // 2. 保存用户积分流水订单
                     userCreditOrderDao.insert(userCreditOrderReq);
-                    // TODO 写入 task
-                    
+                    taskDao.insert(task);
                     
                 } catch (DuplicateKeyException e) {
                     status.setRollbackOnly();
@@ -135,7 +148,15 @@ public class CreditRepository implements ICreditRepository {
             }
         }
         
-        // TODO 发送 MQ 消息
-        
+        try {
+            // 发送MQ消息
+            eventPublisher.publish(task.getTopic(), task.getMessage());
+            // 更新数据库记录
+            taskDao.updateTaskSendMessageCompleted(task);
+            log.info("调整账户积分记录，发送MQ消息 FINISHED. userId: {} orderId:{} topic: {}", userId, creditOrderEntity.getOrderId(), task.getTopic());
+        } catch (Exception e) {
+            log.error("调整账户积分记录，发送MQ消息 FAILED. userId: {} topic: {}", userId, task.getTopic(), e);
+            taskDao.updateTaskSendMessageFail(task);
+        }
     }
 }

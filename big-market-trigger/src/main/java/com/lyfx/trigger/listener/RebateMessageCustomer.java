@@ -3,6 +3,7 @@ package com.lyfx.trigger.listener;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.lyfx.domain.activity.model.entity.SkuRechargeEntity;
+import com.lyfx.domain.activity.model.vo.OrderTradeTypeVO;
 import com.lyfx.domain.activity.service.IRaffleActivityAccountQuotaService;
 import com.lyfx.domain.credit.model.entity.TradeEntity;
 import com.lyfx.domain.credit.model.vo.TradeNameVO;
@@ -56,6 +57,7 @@ public class RebateMessageCustomer {
                     skuRechargeEntity.setUserId(rebateMessage.getUserId());
                     skuRechargeEntity.setSku(Long.valueOf(rebateMessage.getRebateConfig()));
                     skuRechargeEntity.setOutBusinessNo(rebateMessage.getBizId());
+                    skuRechargeEntity.setOrderTradeType(OrderTradeTypeVO.rebate_no_pay_trade);
                     raffleActivityAccountQuotaService.createOrder(skuRechargeEntity);
                     break;
                 case "integral":

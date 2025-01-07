@@ -2,6 +2,7 @@ package com.lyfx.infrastructure.persistent.po;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -67,7 +68,12 @@ public class RaffleActivityOrder {
     private Integer monthCount;
     
     /**
-     * 订单状态（completed）
+     * 支付金额【积分】
+     */
+    private BigDecimal payAmount;
+    
+    /**
+     * 订单状态（completed, wait_pay）
      */
     private String state;
     

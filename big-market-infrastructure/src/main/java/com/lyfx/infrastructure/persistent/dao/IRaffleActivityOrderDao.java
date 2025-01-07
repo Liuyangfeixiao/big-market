@@ -16,4 +16,8 @@ public interface IRaffleActivityOrderDao {
     void insert(RaffleActivityOrder raffleActivityOrder);
     
     List<RaffleActivityOrder> queryRaffleActivityOrderByUserId(String userId);
+    
+    RaffleActivityOrder queryRaffleActivityOrder(RaffleActivityOrder raffleActivityOrderReq);
+    
+    int updateOrderCompleted(RaffleActivityOrder raffleActivityOrderReq);
 }

@@ -1,9 +1,6 @@
 package com.lyfx.domain.activity.service;
 
-import com.lyfx.domain.activity.model.entity.ActivityAccountEntity;
-import com.lyfx.domain.activity.model.entity.ActivityOrderEntity;
-import com.lyfx.domain.activity.model.entity.ActivityShopCarEntity;
-import com.lyfx.domain.activity.model.entity.SkuRechargeEntity;
+import com.lyfx.domain.activity.model.entity.*;
 
 /**
  * @author Yangfeixaio Liu
@@ -22,6 +19,8 @@ public interface IRaffleActivityAccountQuotaService {
      * @return 订单号
      */
     String createOrder(SkuRechargeEntity skuRechargeEntity);
+    
+    void updateOrder(DeliveryOrderEntity deliveryOrderEntity);
     
     Integer queryRaffleActivityAccountDayPartakeCount(Long activityId, String userId);
     

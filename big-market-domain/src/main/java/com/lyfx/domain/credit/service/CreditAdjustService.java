@@ -1,12 +1,15 @@
 package com.lyfx.domain.credit.service;
 
+import com.lyfx.domain.credit.event.CreditAdjustSuccessMessageEvent;
 import com.lyfx.domain.credit.model.aggregate.TradeAggregate;
 import com.lyfx.domain.credit.model.entity.CreditAccountEntity;
 import com.lyfx.domain.credit.model.entity.CreditOrderEntity;
+import com.lyfx.domain.credit.model.entity.TaskEntity;
 import com.lyfx.domain.credit.model.entity.TradeEntity;
 import com.lyfx.domain.credit.model.vo.TradeTypeVO;
 import com.lyfx.domain.credit.repository.ICreditRepository;
 import com.lyfx.types.enums.ResponseCode;
+import com.lyfx.types.event.BaseEvent;
 import com.lyfx.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,9 @@ public class CreditAdjustService implements ICreditAdjustService {
     
     @Resource
     private ICreditRepository creditRepository;
+    
+    @Resource
+    private CreditAdjustSuccessMessageEvent creditAdjustSuccessMessageEvent;
     
     @Override
     public String createOrder(TradeEntity tradeEntity) {
@@ -50,11 +56,23 @@ public class CreditAdjustService implements ICreditAdjustService {
                 tradeEntity.getAmount(),
                 tradeEntity.getOutBusinessNo());
         
+        // 构建消息任务对象
+        CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage creditAdjustSuccessMessage = new CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage();
+        creditAdjustSuccessMessage.setUserId(tradeEntity.getUserId());
+        creditAdjustSuccessMessage.setOrderId(creditOrderEntity.getOrderId());
+        creditAdjustSuccessMessage.setAmount(tradeEntity.getAmount());
+        creditAdjustSuccessMessage.setOutBusinessNo(tradeEntity.getOutBusinessNo());
+        
+        BaseEvent.EventMessage<CreditAdjustSuccessMessageEvent.CreditAdjustSuccessMessage> creditAdjustSuccessMessageEventMessage = creditAdjustSuccessMessageEvent.buildEventMessage(creditAdjustSuccessMessage);
+        
+        TaskEntity taskEntity = TradeAggregate.createTaskEntity(tradeEntity.getUserId(), creditAdjustSuccessMessageEvent.topic(), creditAdjustSuccessMessageEventMessage.getId(), creditAdjustSuccessMessageEventMessage);
+        
         // 构建交易聚合对象
         TradeAggregate tradeAggregate = TradeAggregate.builder()
                 .userId(tradeEntity.getUserId())
                 .creditAccountEntity(creditAccountEntity)
                 .creditOrderEntity(creditOrderEntity)
+                .taskEntity(taskEntity)
                 .build();
         
         // 保存积分交易订单流水

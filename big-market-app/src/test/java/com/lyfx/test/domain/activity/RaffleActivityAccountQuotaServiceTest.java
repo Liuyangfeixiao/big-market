@@ -1,6 +1,7 @@
 package com.lyfx.test.domain.activity;
 
 import com.lyfx.domain.activity.model.entity.SkuRechargeEntity;
+import com.lyfx.domain.activity.model.vo.OrderTradeTypeVO;
 import com.lyfx.domain.activity.service.IRaffleActivityAccountQuotaService;
 import com.lyfx.domain.activity.service.armory.IActivityArmory;
 import com.lyfx.types.exception.AppException;
@@ -42,6 +43,7 @@ public class RaffleActivityAccountQuotaServiceTest {
         skuRechargeEntity.setSku(9011L);
         // outBusinessNo 作为幂等仿重使用，同一个业务单号2次使用会抛出索引冲突 Duplicate entry '700091009111' for key 'uq_out_business_no' 确保唯一性。
         skuRechargeEntity.setOutBusinessNo("700091009113");
+        skuRechargeEntity.setOrderTradeType(OrderTradeTypeVO.rebate_no_pay_trade);
         String orderId = raffleOrder.createOrder(skuRechargeEntity);
         log.info("测试结果：{}", orderId);
     }
@@ -61,6 +63,7 @@ public class RaffleActivityAccountQuotaServiceTest {
                 skuRechargeEntity.setSku(9011L);
                 // outBusinessNo 作为幂等仿重使用，同一个业务单号2次使用会抛出索引冲突 Duplicate entry '700091009111' for key 'uq_out_business_no' 确保唯一性。
                 skuRechargeEntity.setOutBusinessNo(RandomStringUtils.randomNumeric(12));
+                skuRechargeEntity.setOrderTradeType(OrderTradeTypeVO.rebate_no_pay_trade);
                 String orderId = raffleOrder.createOrder(skuRechargeEntity);
                 log.info("测试结果：{}", orderId);
             } catch (AppException e) {
@@ -71,5 +74,18 @@ public class RaffleActivityAccountQuotaServiceTest {
         new CountDownLatch(1).await();
     }
     
+    @Test
+    public void test_credit_pay_order() throws InterruptedException {
+        SkuRechargeEntity skuRechargeEntity = new SkuRechargeEntity();
+        skuRechargeEntity.setUserId("lyfx");
+        skuRechargeEntity.setSku(9011L);
+        skuRechargeEntity.setOutBusinessNo("202501072136");
+        skuRechargeEntity.setOrderTradeType(OrderTradeTypeVO.credit_pay_trade);
+        String orderId = raffleOrder.createOrder(skuRechargeEntity);
+        
+        log.info("测试结果: orderId: {}", orderId);
+        
+        new CountDownLatch(1).await();
+    }
     
 }
