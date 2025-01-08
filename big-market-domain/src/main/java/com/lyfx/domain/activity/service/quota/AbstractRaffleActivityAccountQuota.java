@@ -2,6 +2,7 @@ package com.lyfx.domain.activity.service.quota;
 
 import com.lyfx.domain.activity.model.aggregate.CreateQuotaOrderAggregate;
 import com.lyfx.domain.activity.model.entity.*;
+import com.lyfx.domain.activity.model.vo.OrderTradeTypeVO;
 import com.lyfx.domain.activity.repository.IActivityRepository;
 import com.lyfx.domain.activity.service.IRaffleActivityAccountQuotaService;
 import com.lyfx.domain.activity.service.quota.policy.ITradePolicy;
@@ -34,14 +35,23 @@ public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityA
     }
     
     @Override
-    public String createOrder(SkuRechargeEntity skuRechargeEntity) {
-        // 1. 参数校验
+    public UnpaidActivityOrderEntity createOrder(SkuRechargeEntity skuRechargeEntity) {
+        // 0. 参数校验
         String userId = skuRechargeEntity.getUserId();
         Long sku = skuRechargeEntity.getSku();
         String outBusinessNo = skuRechargeEntity.getOutBusinessNo();
         if (sku == null || StringUtils.isBlank(userId) || StringUtils.isBlank(outBusinessNo)) {
             throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
         }
+        
+        // 1. 查询是否存在未支付订单[一个月内未支付订单] & 支付类型查询，非支付的返利走兑换方法
+        if (skuRechargeEntity.getOrderTradeType().equals(OrderTradeTypeVO.credit_pay_trade)) {
+            UnpaidActivityOrderEntity unpaidActivityOrder = activityRepository.queryUnpaidActivityOrder(skuRechargeEntity);
+            if (unpaidActivityOrder != null) {
+                return unpaidActivityOrder;
+            }
+        }
+        
         // 2. 查询基础信息
         // 2.1 通过sku查询活动信息
         ActivitySkuEntity activitySkuEntity = queryActivitySku(sku);
@@ -61,8 +71,14 @@ public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityA
         ITradePolicy tradePolicy = tradePolicyGroup.get(skuRechargeEntity.getOrderTradeType().getCode());
         tradePolicy.trade(createOrderAggregate);
         
-        // 6. 返回单号
-        return createOrderAggregate.getActivityOrderEntity().getOrderId();
+        ActivityOrderEntity activityOrderEntity = createOrderAggregate.getActivityOrderEntity();
+        // 6. 返回订单信息
+        return UnpaidActivityOrderEntity.builder()
+                .userId(userId)
+                .orderId(activityOrderEntity.getOrderId())
+                .payAmount(activityOrderEntity.getPayAmount())
+                .outBusinessNo(activityOrderEntity.getOutBusinessNo())
+                .build();
     }
     
 //    protected abstract void doSaveOrder(CreateQuotaOrderAggregate createOrderAggregate);

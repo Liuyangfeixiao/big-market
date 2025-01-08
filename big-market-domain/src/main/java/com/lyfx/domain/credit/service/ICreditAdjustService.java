@@ -1,5 +1,6 @@
 package com.lyfx.domain.credit.service;
 
+import com.lyfx.domain.credit.model.entity.CreditAccountEntity;
 import com.lyfx.domain.credit.model.entity.TradeEntity;
 
 /**
@@ -9,4 +10,6 @@ import com.lyfx.domain.credit.model.entity.TradeEntity;
  */
 public interface ICreditAdjustService {
     String createOrder(TradeEntity tradeEntity);
+    
+    CreditAccountEntity queryUserCreditAccount(String userId);
 }

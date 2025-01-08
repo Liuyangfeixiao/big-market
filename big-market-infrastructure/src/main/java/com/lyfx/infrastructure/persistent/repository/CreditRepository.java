@@ -1,11 +1,13 @@
 package com.lyfx.infrastructure.persistent.repository;
 
 import com.alibaba.fastjson2.JSON;
+import com.lyfx.domain.activity.model.vo.OrderTradeTypeVO;
 import com.lyfx.domain.award.model.vo.AccountStatusVO;
 import com.lyfx.domain.credit.model.aggregate.TradeAggregate;
 import com.lyfx.domain.credit.model.entity.CreditAccountEntity;
 import com.lyfx.domain.credit.model.entity.CreditOrderEntity;
 import com.lyfx.domain.credit.model.entity.TaskEntity;
+import com.lyfx.domain.credit.model.vo.TradeTypeVO;
 import com.lyfx.domain.credit.repository.ICreditRepository;
 import com.lyfx.infrastructure.event.EventPublisher;
 import com.lyfx.infrastructure.persistent.dao.ITaskDao;
@@ -107,7 +109,7 @@ public class CreditRepository implements ICreditRepository {
                     UserCreditAccount userCreditAccount = userCreditAccountDao.queryUserCreditAccount(userCreditAccountReq);
                     BigDecimal availableAmount = userCreditAccountReq.getAvailableAmount();
                     if (null == userCreditAccount ) {
-                        if (availableAmount.compareTo(BigDecimal.ZERO) < 0) {
+                        if (creditOrderEntity.getTradeType().equals(TradeTypeVO.REVERSE) || availableAmount.compareTo(BigDecimal.ZERO) < 0) {
                             // 没有开通账户，并且消耗积分
                             status.setRollbackOnly();
                             throw new AppException(ResponseCode.USER_CREDIT_ACCOUNT_NO_AVAILABLE_AMOUNT.getCode(), ResponseCode.USER_CREDIT_ACCOUNT_NO_AVAILABLE_AMOUNT.getInfo());

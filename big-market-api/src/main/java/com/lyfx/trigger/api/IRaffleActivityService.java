@@ -1,10 +1,10 @@
 package com.lyfx.trigger.api;
 
-import com.lyfx.trigger.api.dto.ActivityDrawRequestDTO;
-import com.lyfx.trigger.api.dto.ActivityDrawResponseDTO;
-import com.lyfx.trigger.api.dto.UserActivityAccountRequestDTO;
-import com.lyfx.trigger.api.dto.UserActivityAccountResponseDTO;
+import com.lyfx.trigger.api.dto.*;
 import com.lyfx.types.model.Response;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Yangfeixaio Liu
@@ -36,5 +36,16 @@ public interface IRaffleActivityService {
      */
     Response<Boolean> isCalendarSignRebate(String userId);
     
+    /**
+     * 查询用户活动账户
+     * @param request 请求对象[活动ID, 用户ID]
+     * @return 返回结果 [总额度，月额度，日额度]
+     */
     Response<UserActivityAccountResponseDTO> queryUserActivityAccount(UserActivityAccountRequestDTO request);
+    
+    Response<List<SkuProductResponseDTO>> querySkuProductListByActivityId(Long activityId);
+    
+    Response<BigDecimal> queryUserCreditAccount(String userId);
+    
+    Response<Boolean> creditPayExchangeSku(SkuProductShopCarRequestDTO request);
 }

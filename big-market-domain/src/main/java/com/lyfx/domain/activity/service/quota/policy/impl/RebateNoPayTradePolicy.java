@@ -25,7 +25,8 @@ public class RebateNoPayTradePolicy implements ITradePolicy {
     
     @Override
     public void trade(CreateQuotaOrderAggregate createQuotaOrderAggregate) {
-        // 不需支付则修改订单金额为0，状态为 completed，直接给用户充值
+        // 不需支付则修改订单金额为0，状态为 completed，直接给用户充值，改变用户的额度账户
+        // 不插入活动账户流水
         createQuotaOrderAggregate.setOrderState(OrderStateVO.completed);
         createQuotaOrderAggregate.getActivityOrderEntity().setPayAmount(BigDecimal.ZERO);
         

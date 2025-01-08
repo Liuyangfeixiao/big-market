@@ -45,6 +45,7 @@ public class CreditAdjustSuccessCustomer {
             deliveryOrderEntity.setUserId(creditAdjustSuccessMessage.getUserId());
             deliveryOrderEntity.setOutBusinessNo(creditAdjustSuccessMessage.getOutBusinessNo());
             accountQuotaService.updateOrder(deliveryOrderEntity);
+            log.info("监听积分账户调整成功消息，交易商品发货 FINISHED topic: {} message: {}", topic, message);
         } catch (AppException e) {
           if (ResponseCode.INDEX_DUP.getCode().equals(e.getCode())) {
               log.warn("监听积分账户调整成功消息，进行交易商品发货，消费重复 topic: {} message: {}", topic, message, e);

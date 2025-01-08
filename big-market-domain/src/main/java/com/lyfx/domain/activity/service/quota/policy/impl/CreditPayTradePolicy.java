@@ -23,6 +23,8 @@ public class CreditPayTradePolicy implements ITradePolicy {
     
     @Override
     public void trade(CreateQuotaOrderAggregate createQuotaOrderAggregate) {
+        // 插入活动账户流水，不改变用户账户额度
+        // 等到积分支付完成 ，发送MQ消息，再改变用户账户额度，以及订单状态
         createQuotaOrderAggregate.setOrderState(OrderStateVO.wait_pay);
         activityRepository.doSaveCreditPayOrder(createQuotaOrderAggregate);
     }
