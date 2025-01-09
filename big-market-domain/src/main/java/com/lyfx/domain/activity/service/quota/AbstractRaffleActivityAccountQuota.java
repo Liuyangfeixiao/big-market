@@ -13,6 +13,7 @@ import com.lyfx.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -59,6 +60,15 @@ public abstract class AbstractRaffleActivityAccountQuota extends RaffleActivityA
         ActivityEntity activityEntity = queryRaffleActivityByActivityId(activitySkuEntity.getActivityId());
         // 2.3 查询次数信息（用户在活动上可参与的次数）
         ActivityCountEntity activityCountEntity = queryRaffleActivityCountByActivityCountId(activitySkuEntity.getActivityCountId());
+        
+        // 3. 用户积分额度校验
+        if (OrderTradeTypeVO.credit_pay_trade.equals(skuRechargeEntity.getOrderTradeType())) {
+            BigDecimal availableAmount = activityRepository.queryUserCreditAvailableAmount(userId);
+            if (availableAmount.compareTo(activitySkuEntity.getProductAmount()) < 0) {
+                // 没有足够的积分兑换 sku
+                throw new AppException(ResponseCode.USER_CREDIT_ACCOUNT_NO_AVAILABLE_AMOUNT.getCode(), ResponseCode.USER_CREDIT_ACCOUNT_NO_AVAILABLE_AMOUNT.getInfo());
+            }
+        }
         
         // 3. 活动动作规则校验
         IActionChain actionChain = defaultActivityChainFactory.openActionChain();

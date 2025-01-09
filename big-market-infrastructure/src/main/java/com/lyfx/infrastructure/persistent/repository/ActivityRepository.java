@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,6 +58,8 @@ public class ActivityRepository implements IActivityRepository {
     private IRaffleActivityAccountMonthDao raffleActivityAccountMonthDao;
     @Resource
     private IUserRaffleOrderDao userRaffleOrderDao;
+    @Resource
+    private IUserCreditAccountDao userCreditAccountDao;
     @Resource
     private TransactionTemplate transactionTemplate;
     @Resource
@@ -758,5 +761,15 @@ public class ActivityRepository implements IActivityRepository {
         }
         
         return skuProductEntities;
+    }
+    
+    @Override
+    public BigDecimal queryUserCreditAvailableAmount(String userId) {
+        UserCreditAccount userCreditAccountReq = new UserCreditAccount();
+        userCreditAccountReq.setUserId(userId);
+        UserCreditAccount userCreditAccount = userCreditAccountDao.queryUserCreditAccount(userCreditAccountReq);
+        if (null == userCreditAccount) {return BigDecimal.ZERO;}
+        
+        return userCreditAccount.getAvailableAmount();
     }
 }
